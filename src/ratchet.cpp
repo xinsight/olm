@@ -17,10 +17,13 @@
 #include "olm/memory.hh"
 #include "olm/cipher.hh"
 #include "olm/pickle.hh"
+#include "olm/logging.h"
 
 #include <cstring>
 
 namespace {
+
+static const char *LOG_CATEGORY = "olm::Ratchet";
 
 static const std::uint8_t PROTOCOL_VERSION = 3;
 static const std::uint8_t MESSAGE_KEY_SEED[1] = {0x01};
@@ -76,6 +79,8 @@ static void advance_chain_key(
         new_chain_key.key
     );
     new_chain_key.index = chain_key.index + 1;
+    olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY, "Derived chain key C(%i,%i)",
+              chain_index, new_chain_key.index);
 }
 
 
@@ -90,6 +95,8 @@ static void create_message_keys(
         message_key.key
     );
     message_key.index = chain_key.index;
+    olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY, "Created message key with chain key C(%i,%i)",
+              chain_index, message_key.index);
 }
 
 
@@ -169,6 +176,9 @@ static std::size_t verify_mac_and_decrypt_for_new_chain(
         new_chain.ratchet_key, session.kdf_info,
         new_root_key, new_chain.chain_key
     );
+    olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY, "Calculated new receiver chain R(%i)",
+                  chain_index);
+
     std::size_t result = verify_mac_and_decrypt_for_existing_chain(
         session, chain_index, new_chain.chain_key, reader,
         plaintext, max_plaintext_length
@@ -209,6 +219,7 @@ void olm::Ratchet::initialise_as_bob(
     receiver_chains[0].ratchet_key = their_ratchet_key;
     chain_index = 0;
     olm::unset(derived_secrets);
+    olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY, "Initialised receiver chain R(0)");
 }
 
 
@@ -231,6 +242,7 @@ void olm::Ratchet::initialise_as_alice(
     sender_chain[0].ratchet_key = our_ratchet_key;
     chain_index = 0;
     olm::unset(derived_secrets);
+    olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY, "Initialised sender chain R(0)");
 }
 
 namespace olm {
@@ -438,6 +450,9 @@ std::size_t olm::Ratchet::encrypt(
     if (sender_chain.empty()) {
         sender_chain.insert();
         olm::curve25519_generate_key(random, sender_chain[0].ratchet_key);
+        olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY, "Created new ratchet key T(%i) %s",
+                  chain_index + 1,
+                  sender_chain[0].ratchet_key.to_string().c_str());
         create_chain_key(
             root_key,
             sender_chain[0].ratchet_key,
@@ -445,6 +460,8 @@ std::size_t olm::Ratchet::encrypt(
             kdf_info,
             root_key, sender_chain[0].chain_key
         );
+        olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY, "Initialised new sender chain R(%i)",
+                  chain_index + 1);
         chain_index++;
     }
 
@@ -474,6 +491,14 @@ std::size_t olm::Ratchet::encrypt(
         output, output_length
     );
 
+    olm_logf(OLM_LOG_TRACE, LOG_CATEGORY,
+              "Encoded message ver=%i ratchet_key=%s chain_idx=%i ciphertext=%s",
+              PROTOCOL_VERSION,
+              olm::bytes_to_string(writer.ratchet_key, olm::KEY_LENGTH).c_str(),
+              counter,
+              olm::bytes_to_string(writer.ciphertext, ciphertext_length).c_str()
+    );
+
     olm::unset(keys);
     return output_length;
 }
@@ -500,6 +525,10 @@ std::size_t olm::Ratchet::decrypt(
     std::uint8_t const * input, std::size_t input_length,
     std::uint8_t * plaintext, std::size_t max_plaintext_length
 ) {
+    olm_logf(OLM_LOG_TRACE, LOG_CATEGORY,
+              "Decrypting message %s",
+              olm::bytes_to_string(input, input_length).c_str());
+
     olm::MessageReader reader;
     olm::decode_message(
         reader, input, input_length, ratchet_cipher.mac_length()
@@ -551,6 +580,8 @@ std::size_t olm::Ratchet::decrypt(
     std::size_t result = std::size_t(-1);
 
     if (!chain) {
+        olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY,
+                  "Sender ratchet key does not match known chain; starting new one");
         result = verify_mac_and_decrypt_for_new_chain(
             *this, reader, plaintext, max_plaintext_length
         );
@@ -611,6 +642,8 @@ std::size_t olm::Ratchet::decrypt(
         olm::unset(sender_chain[0]);
         sender_chain.erase(sender_chain.begin());
         receiver_chain_index = ++chain_index;
+        olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY, "Initialised new receiver chain R(%i)",
+                  chain_index);
     }
 
     while (chain->chain_key.index < reader.counter) {
