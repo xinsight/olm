@@ -7,7 +7,7 @@ JS_OPTIMIZE_FLAGS ?= -O3
 FUZZING_OPTIMIZE_FLAGS ?= -O3
 CC = gcc
 EMCC = emcc
-AFL_CC = afl_gcc
+AFL_CC = afl-gcc
 AFL_CXX = afl-g++
 RELEASE_TARGET := $(BUILD_DIR)/libolm.so
 DEBUG_TARGET := $(BUILD_DIR)/libolm_debug.so
@@ -15,20 +15,28 @@ JS_TARGET := javascript/olm.js
 
 JS_EXPORTED_FUNCTIONS := javascript/exported_functions.json
 
-PUBLIC_HEADERS := include/olm/olm.h
+PUBLIC_HEADERS := include/olm/olm.h include/olm/outbound_group_session.h include/olm/inbound_group_session.h
 
-SOURCES := $(wildcard src/*.cpp) $(wildcard src/*.c)
-RELEASE_OBJECTS := $(patsubst src/%,$(BUILD_DIR)/release/%,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES))))
-DEBUG_OBJECTS := $(patsubst src/%,$(BUILD_DIR)/debug/%,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES))))
-FUZZER_OBJECTS := $(patsubst src/%,$(BUILD_DIR)/fuzzers/objects/%,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES))))
+SOURCES := $(wildcard src/*.cpp) $(wildcard src/*.c) \
+    lib/crypto-algorithms/sha256.c \
+    lib/crypto-algorithms/aes.c \
+    lib/curve25519-donna/curve25519-donna.c
+
 FUZZER_SOURCES := $(wildcard fuzzers/fuzz_*.cpp) $(wildcard fuzzers/fuzz_*.c)
-FUZZER_BINARIES := $(patsubst fuzzers/%,$(BUILD_DIR)/fuzzers/%,$(patsubst %.c,%,$(patsubst %.cpp,%,$(FUZZER_SOURCES))))
-FUZZER_DEBUG_BINARIES := $(patsubst $(BUILD_DIR)/fuzzers/fuzz_%,$(BUILD_DIR)/fuzzers/debug_%,$(FUZZER_BINARIES))
 TEST_SOURCES := $(wildcard tests/test_*.cpp) $(wildcard tests/test_*.c)
-TEST_BINARIES := $(patsubst tests/%,$(BUILD_DIR)/tests/%,$(patsubst %.c,%,$(patsubst %.cpp,%,$(TEST_SOURCES))))
-JS_OBJECTS := $(patsubst src/%,$(BUILD_DIR)/javascript/%,$(patsubst %.c,%.js.bc,$(patsubst %.cpp,%.js.bc,$(SOURCES))))
+
+OBJECTS := $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))
+RELEASE_OBJECTS := $(addprefix $(BUILD_DIR)/release/,$(OBJECTS))
+DEBUG_OBJECTS := $(addprefix $(BUILD_DIR)/debug/,$(OBJECTS))
+FUZZER_OBJECTS := $(addprefix $(BUILD_DIR)/fuzzers/objects/,$(OBJECTS))
+FUZZER_BINARIES := $(addprefix $(BUILD_DIR)/,$(basename $(FUZZER_SOURCES)))
+FUZZER_DEBUG_BINARIES := $(patsubst $(BUILD_DIR)/fuzzers/fuzz_%,$(BUILD_DIR)/fuzzers/debug_%,$(FUZZER_BINARIES))
+TEST_BINARIES := $(patsubst tests/%,$(BUILD_DIR)/tests/%,$(basename $(TEST_SOURCES)))
+JS_OBJECTS := $(addprefix $(BUILD_DIR)/javascript/,$(OBJECTS))
 JS_PRE := $(wildcard javascript/*pre.js)
-JS_POST := $(wildcard javascript/*post.js)
+JS_POST := javascript/olm_outbound_group_session.js \
+    javascript/olm_inbound_group_session.js \
+    javascript/olm_post.js
 
 CPPFLAGS += -Iinclude -Ilib
 # we rely on <stdint.h>, which was introduced in C99
@@ -82,14 +90,6 @@ $(JS_TARGET): LDFLAGS += $(JS_OPTIMIZE_FLAGS)
 lib: $(RELEASE_TARGET)
 .PHONY: lib
 
-# Make sure that the build directory exists.
-# We can't check the build directory into git because it is empty.
-makedirs:
-	mkdir -p $(BUILD_DIR)/release $(BUILD_DIR)/debug $(BUILD_DIR)/javascript\
-            $(BUILD_DIR)/tests $(BUILD_DIR)/fuzzers/objects
-.PHONY: makedirs
-
-
 $(RELEASE_TARGET): $(RELEASE_OBJECTS)
 	$(CXX) $(LDFLAGS) --shared -fPIC \
             -Wl,--version-script,version_script.ver \
@@ -108,20 +108,10 @@ js: $(JS_TARGET)
 
 $(JS_TARGET): $(JS_OBJECTS) $(JS_PRE) $(JS_POST) $(JS_EXPORTED_FUNCTIONS)
 	$(EMCC_LINK) \
-               --pre-js $(JS_PRE) --post-js $(JS_POST) \
+               $(foreach f,$(JS_PRE),--pre-js $(f)) \
+               $(foreach f,$(JS_POST),--post-js $(f)) \
                -s "EXPORTED_FUNCTIONS=@$(JS_EXPORTED_FUNCTIONS)" \
                $(JS_OBJECTS) -o $@
-
-clean:;
-	rm -rf $(RELEASE_OBJECTS) $(RELEASE_OBJECTS:.o=.d) \
-               $(DEBUG_OBJECTS) $(DEBUG_OBJECTS:.o=.d) \
-               $(TEST_BINARIES) $(TEST_BINARIES:=.d) \
-               $(JS_OBJECTS) $(JS_OBJECTS:.bc=.d) $(JS_TARGET) \
-               $(JS_EXPORTED_FUNCTIONS)\
-               $(RELEASE_TARGET) $(DEBUG_TARGET)\
-               $(FUZZER_OBJECTS) $(FUZZER_OBJECTS:.o=.d)\
-               $(FUZZER_BINARIES) $(FUZZER_BINARIES:=.d)\
-               $(FUZZER_DEBUG_BINARIES) $(FUZZER_DEBUG_BINARIES:=.d)\
 
 build_tests: $(TEST_BINARIES)
 
@@ -135,41 +125,55 @@ fuzzers: $(FUZZER_BINARIES) $(FUZZER_DEBUG_BINARIES)
 .PHONY: fuzzers
 
 $(JS_EXPORTED_FUNCTIONS): $(PUBLIC_HEADERS)
-	perl -MJSON -ne '/(olm_[^( ]*)\(/ && push @f, "_$$1"; END { print encode_json \@f }' $^ > $@.tmp
+	perl -MJSON -ne '$$f{"_$$1"}=1 if /(olm_[^( ]*)\(/; END { @f=sort keys %f; print encode_json \@f }' $^ > $@.tmp
 	mv $@.tmp $@
 
 all: test js lib debug
-.PHONY: lib
+.PHONY: all
+
+clean:;
+	rm -rf $(BUILD_DIR)
+.PHONY: clean
 
 ### rules for building objects
-$(BUILD_DIR)/release/%.o: src/%.c | makedirs
+$(BUILD_DIR)/release/%.o: %.c
+	mkdir -p $(dir $@)
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
 
-$(BUILD_DIR)/release/%.o: src/%.cpp | makedirs
+$(BUILD_DIR)/release/%.o: %.cpp
+	mkdir -p $(dir $@)
 	$(COMPILE.cc) $(OUTPUT_OPTION) $<
 
-$(BUILD_DIR)/debug/%.o: src/%.c | makedirs
+$(BUILD_DIR)/debug/%.o: %.c
+	mkdir -p $(dir $@)
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
 
-$(BUILD_DIR)/debug/%.o: src/%.cpp | makedirs
+$(BUILD_DIR)/debug/%.o: %.cpp
+	mkdir -p $(dir $@)
 	$(COMPILE.cc) $(OUTPUT_OPTION) $<
 
-$(BUILD_DIR)/javascript/%.js.bc: src/%.c | makedirs
+$(BUILD_DIR)/javascript/%.o: %.c
+	mkdir -p $(dir $@)
 	$(EMCC.c) $(OUTPUT_OPTION) $<
 
-$(BUILD_DIR)/javascript/%.js.bc: src/%.cpp | makedirs
+$(BUILD_DIR)/javascript/%.o: %.cpp
+	mkdir -p $(dir $@)
 	$(EMCC.cc) $(OUTPUT_OPTION) $<
 
 $(BUILD_DIR)/tests/%: tests/%.c $(DEBUG_OBJECTS)
+	mkdir -p $(dir $@)
 	$(LINK.c) $< $(DEBUG_OBJECTS) $(LOADLIBES) $(LDLIBS) -o $@
 
 $(BUILD_DIR)/tests/%: tests/%.cpp $(DEBUG_OBJECTS)
+	mkdir -p $(dir $@)
 	$(LINK.cc) $< $(DEBUG_OBJECTS) $(LOADLIBES) $(LDLIBS) -o $@
 
-$(BUILD_DIR)/fuzzers/objects/%.o: src/%.c | makedirs
+$(BUILD_DIR)/fuzzers/objects/%.o: %.c
+	mkdir -p $(dir $@)
 	$(AFL.c) $(OUTPUT_OPTION) $<
 
-$(BUILD_DIR)/fuzzers/objects/%.o: src/%.cpp | makedirs
+$(BUILD_DIR)/fuzzers/objects/%.o: %.cpp
+	mkdir -p $(dir $@)
 	$(AFL.cc) $(OUTPUT_OPTION) $<
 
 $(BUILD_DIR)/fuzzers/fuzz_%: fuzzers/fuzz_%.c $(FUZZER_OBJECTS)
@@ -188,7 +192,7 @@ $(BUILD_DIR)/fuzzers/debug_%: fuzzers/fuzz_%.cpp $(DEBUG_OBJECTS)
 
 -include $(RELEASE_OBJECTS:.o=.d)
 -include $(DEBUG_OBJECTS:.o=.d)
--include $(JS_OBJECTS:.bc=.d)
+-include $(JS_OBJECTS:.o=.d)
 -include $(TEST_BINARIES:=.d)
 -include $(FUZZER_OBJECTS:.o=.d)
 -include $(FUZZER_BINARIES:=.d)
