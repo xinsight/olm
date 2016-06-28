@@ -191,7 +191,7 @@ const char * olm_account_last_error(
     OlmAccount * account
 ) {
     unsigned error = unsigned(from_c(account)->last_error);
-    if (error < sizeof(ERRORS)) {
+    if (error < (sizeof(ERRORS)/sizeof(ERRORS[0]))) {
         return ERRORS[error];
     } else {
         return "UNKNOWN_ERROR";
@@ -203,7 +203,7 @@ const char * olm_session_last_error(
     OlmSession * session
 ) {
     unsigned error = unsigned(from_c(session)->last_error);
-    if (error < sizeof(ERRORS)) {
+    if (error < (sizeof(ERRORS)/sizeof(ERRORS[0]))) {
         return ERRORS[error];
     } else {
         return "UNKNOWN_ERROR";
@@ -214,7 +214,7 @@ const char * olm_utility_last_error(
     OlmUtility * utility
 ) {
     unsigned error = unsigned(from_c(utility)->last_error);
-    if (error < sizeof(ERRORS)) {
+    if (error < (sizeof(ERRORS)/sizeof(ERRORS[0]))) {
         return ERRORS[error];
     } else {
         return "UNKNOWN_ERROR";
