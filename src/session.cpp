@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 #include "olm/session.hh"
-#include "olm/cipher.hh"
+#include "olm/cipher.h"
 #include "olm/crypto.hh"
 #include "olm/account.hh"
 #include "olm/logging.h"
@@ -33,20 +33,19 @@ static const std::uint8_t ROOT_KDF_INFO[] = "OLM_ROOT";
 static const std::uint8_t RATCHET_KDF_INFO[] = "OLM_RATCHET";
 static const std::uint8_t CIPHER_KDF_INFO[] = "OLM_KEYS";
 
-static const olm::CipherAesSha256 OLM_CIPHER(
-    CIPHER_KDF_INFO, sizeof(CIPHER_KDF_INFO) -1
-);
-
 static const olm::KdfInfo OLM_KDF_INFO = {
     ROOT_KDF_INFO, sizeof(ROOT_KDF_INFO) - 1,
     RATCHET_KDF_INFO, sizeof(RATCHET_KDF_INFO) - 1
 };
 
+static const struct _olm_cipher_aes_sha_256 OLM_CIPHER =
+    OLM_CIPHER_INIT_AES_SHA_256(CIPHER_KDF_INFO);
+
 } // namespace
 
 olm::Session::Session(
-) : ratchet(OLM_KDF_INFO, OLM_CIPHER),
-    last_error(olm::ErrorCode::SUCCESS),
+) : ratchet(OLM_KDF_INFO, OLM_CIPHER_BASE(&OLM_CIPHER)),
+    last_error(OlmErrorCode::OLM_SUCCESS),
     received_message(false) {
 
 }
@@ -64,7 +63,7 @@ std::size_t olm::Session::new_outbound_session(
     std::uint8_t const * random, std::size_t random_length
 ) {
     if (random_length < new_outbound_session_random_length()) {
-        last_error = olm::ErrorCode::NOT_ENOUGH_RANDOM;
+        last_error = OlmErrorCode::OLM_NOT_ENOUGH_RANDOM;
         return std::size_t(-1);
     }
 
@@ -142,7 +141,7 @@ std::size_t olm::Session::new_inbound_session(
     decode_one_time_key_message(reader, one_time_key_message, message_length);
 
     if (!check_message_fields(reader, their_identity_key)) {
-        last_error = olm::ErrorCode::BAD_MESSAGE_FORMAT;
+        last_error = OlmErrorCode::OLM_BAD_MESSAGE_FORMAT;
         return std::size_t(-1);
     }
 
@@ -158,7 +157,7 @@ std::size_t olm::Session::new_inbound_session(
                       olm::bytes_to_string(reader.identity_key,
                                            reader.identity_key + olm::KEY_LENGTH)
                           .c_str());
-            last_error = olm::ErrorCode::BAD_MESSAGE_KEY_ID;
+            last_error = OlmErrorCode::OLM_BAD_MESSAGE_KEY_ID;
             return std::size_t(-1);
         }
     }
@@ -177,12 +176,12 @@ std::size_t olm::Session::new_inbound_session(
     olm::MessageReader message_reader;
     decode_message(
         message_reader, reader.message, reader.message_length,
-        ratchet.ratchet_cipher.mac_length()
+        ratchet.ratchet_cipher->ops->mac_length(ratchet.ratchet_cipher)
     );
 
     if (!message_reader.ratchet_key
             || message_reader.ratchet_key_length != olm::KEY_LENGTH) {
-        last_error = olm::ErrorCode::BAD_MESSAGE_FORMAT;
+        last_error = OlmErrorCode::OLM_BAD_MESSAGE_FORMAT;
         return std::size_t(-1);
     }
 
@@ -200,7 +199,7 @@ std::size_t olm::Session::new_inbound_session(
         olm_logf(OLM_LOG_INFO, LOG_CATEGORY,
                   "Session uses unknown ephemeral key %s",
                   bob_one_time_key.to_string().c_str());
-        last_error = olm::ErrorCode::BAD_MESSAGE_KEY_ID;
+        last_error = OlmErrorCode::OLM_BAD_MESSAGE_KEY_ID;
         return std::size_t(-1);
     }
 
@@ -227,7 +226,7 @@ std::size_t olm::Session::new_inbound_session(
 
 
 std::size_t olm::Session::session_id_length() {
-    return olm::SHA256_OUTPUT_LENGTH;
+    return SHA256_OUTPUT_LENGTH;
 }
 
 
@@ -235,7 +234,7 @@ std::size_t olm::Session::session_id(
     std::uint8_t * id, std::size_t id_length
 ) {
     if (id_length < session_id_length()) {
-        last_error = olm::ErrorCode::OUTPUT_BUFFER_TOO_SMALL;
+        last_error = OlmErrorCode::OLM_OUTPUT_BUFFER_TOO_SMALL;
         return std::size_t(-1);
     }
     std::uint8_t tmp[olm::KEY_LENGTH * 3];
@@ -243,7 +242,7 @@ std::size_t olm::Session::session_id(
     pos = olm::store_array(pos, alice_identity_key.public_key);
     pos = olm::store_array(pos, alice_base_key.public_key);
     pos = olm::store_array(pos, bob_one_time_key.public_key);
-    olm::sha256(tmp, sizeof(tmp), id);
+    _olm_crypto_sha256(tmp, sizeof(tmp), id);
     return session_id_length();
 }
 
@@ -324,7 +323,7 @@ std::size_t olm::Session::encrypt(
               (int)plaintext_length, plaintext);
 
     if (message_length < encrypt_message_length(plaintext_length)) {
-        last_error = olm::ErrorCode::OUTPUT_BUFFER_TOO_SMALL;
+        last_error = OlmErrorCode::OLM_OUTPUT_BUFFER_TOO_SMALL;
         return std::size_t(-1);
     }
     std::uint8_t * message_body;
@@ -369,7 +368,7 @@ std::size_t olm::Session::encrypt(
 
     if (result == std::size_t(-1)) {
         last_error = ratchet.last_error;
-        ratchet.last_error = olm::ErrorCode::SUCCESS;
+        ratchet.last_error = OlmErrorCode::OLM_SUCCESS;
         return result;
     }
 
@@ -393,7 +392,7 @@ std::size_t olm::Session::decrypt_max_plaintext_length(
         olm::PreKeyMessageReader reader;
         decode_one_time_key_message(reader, message, message_length);
         if (!reader.message) {
-            last_error = olm::ErrorCode::BAD_MESSAGE_FORMAT;
+            last_error = OlmErrorCode::OLM_BAD_MESSAGE_FORMAT;
             return std::size_t(-1);
         }
         message_body = reader.message;
@@ -406,7 +405,7 @@ std::size_t olm::Session::decrypt_max_plaintext_length(
 
     if (result == std::size_t(-1)) {
         last_error = ratchet.last_error;
-        ratchet.last_error = olm::ErrorCode::SUCCESS;
+        ratchet.last_error = OlmErrorCode::OLM_SUCCESS;
     }
     return result;
 }
@@ -429,7 +428,7 @@ std::size_t olm::Session::decrypt(
         olm::PreKeyMessageReader reader;
         decode_one_time_key_message(reader, message, message_length);
         if (!reader.message) {
-            last_error = olm::ErrorCode::BAD_MESSAGE_FORMAT;
+            last_error = OlmErrorCode::OLM_BAD_MESSAGE_FORMAT;
             return std::size_t(-1);
         }
         message_body = reader.message;
@@ -442,7 +441,7 @@ std::size_t olm::Session::decrypt(
 
     if (result == std::size_t(-1)) {
         last_error = ratchet.last_error;
-        ratchet.last_error = olm::ErrorCode::SUCCESS;
+        ratchet.last_error = OlmErrorCode::OLM_SUCCESS;
         return result;
     }
 
@@ -491,7 +490,7 @@ std::uint8_t const * olm::unpickle(
     uint32_t pickle_version;
     pos = olm::unpickle(pos, end, pickle_version);
     if (pickle_version != SESSION_PICKLE_VERSION) {
-        value.last_error = olm::ErrorCode::UNKNOWN_PICKLE_VERSION;
+        value.last_error = OlmErrorCode::OLM_UNKNOWN_PICKLE_VERSION;
         return end;
     }
     pos = olm::unpickle(pos, end, value.received_message);
