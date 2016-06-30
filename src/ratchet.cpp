@@ -381,6 +381,7 @@ std::size_t olm::pickle_length(
     length += olm::pickle_length(value.sender_chain);
     length += olm::pickle_length(value.receiver_chains);
     length += olm::pickle_length(value.skipped_message_keys);
+    length += olm::pickle_length(value.chain_index);
     return length;
 }
 
@@ -392,6 +393,7 @@ std::uint8_t * olm::pickle(
     pos = pickle(pos, value.sender_chain);
     pos = pickle(pos, value.receiver_chains);
     pos = pickle(pos, value.skipped_message_keys);
+    pos = pickle(pos, value.chain_index);
     return pos;
 }
 
@@ -408,8 +410,7 @@ std::uint8_t const * olm::unpickle(
 
     // pickle v 0x80000001 includes a chain index; pickle v1 does not.
     if (includes_chain_index) {
-        std::uint32_t dummy;
-        pos = unpickle(pos, end, dummy);
+        pos = unpickle(pos, end, value.chain_index);
     }
     return pos;
 }

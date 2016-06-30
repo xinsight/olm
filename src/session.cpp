@@ -454,7 +454,7 @@ std::size_t olm::Session::decrypt(
 namespace {
 // the master branch writes pickle version 1; the logging_enabled branch writes
 // 0x80000001.
-static const std::uint32_t SESSION_PICKLE_VERSION = 1;
+static const std::uint32_t SESSION_PICKLE_VERSION = 0x80000001;
 }
 
 std::size_t olm::pickle_length(
