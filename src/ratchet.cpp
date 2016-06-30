@@ -398,12 +398,19 @@ std::uint8_t * olm::pickle(
 
 std::uint8_t const * olm::unpickle(
     std::uint8_t const * pos, std::uint8_t const * end,
-    olm::Ratchet & value
+    olm::Ratchet & value,
+    bool includes_chain_index
 ) {
     pos = unpickle(pos, end, value.root_key);
     pos = unpickle(pos, end, value.sender_chain);
     pos = unpickle(pos, end, value.receiver_chains);
     pos = unpickle(pos, end, value.skipped_message_keys);
+
+    // pickle v 0x80000001 includes a chain index; pickle v1 does not.
+    if (includes_chain_index) {
+        std::uint32_t dummy;
+        pos = unpickle(pos, end, dummy);
+    }
     return pos;
 }
 
