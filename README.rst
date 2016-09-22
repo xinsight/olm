@@ -1,8 +1,9 @@
 Olm
 ===
 
-An implementation of the cryptographic ratchet described by
-https://github.com/trevp/axolotl/wiki, written in C++11 and exposed as a C API
+An implementation of the Double Ratchet cryptographic ratchet described by
+https://github.com/trevp/double_ratchet/wiki, written in C and C++11 and
+exposed as a C API.
 
 The specification of the Olm ratchet can be found in docs/olm.rst or
 https://matrix.org/docs/spec/olm.html
@@ -27,14 +28,27 @@ To build the javascript bindings, install emscripten from http://kripken.github.
 .. code:: bash
 
     make js
-    npm pack javascript  # packages olm.js into olm-x.y.z.tgz
 
-Remember to make a tag after releasing a tarball:
+Release process
+---------------
 
 .. code:: bash
 
-    git tag x.y.z
+    # Bump version numbers in ``Makefile`` and ``javascript/package.json``
+    # Prepare changelog
+    git commit
+    make clean
+    make test
+    make js
+    npm pack javascript
+    VERSION=x.y.z
+    scp olm-$VERSION.tgz packages@ldc-prd-matrix-001:/sites/matrix/packages/npm/olm/
+    git tag $VERSION -s
     git push --tags
+
+It's probably sensible to do the above on a release branch (``release-vx.y.z``
+by convention), and merge back to master once complete.
+
 
 Design
 ------

@@ -80,11 +80,11 @@ int main() {
     assert_equals(pickle1, pickle2, pickle_length);
 }
 
-
 {
     TestCase test_case("Group message send/receive");
 
     uint8_t random_bytes[] =
+        "0123456789ABDEF0123456789ABCDEF"
         "0123456789ABDEF0123456789ABCDEF"
         "0123456789ABDEF0123456789ABCDEF"
         "0123456789ABDEF0123456789ABCDEF"
@@ -97,7 +97,7 @@ int main() {
     uint8_t memory[size];
     OlmOutboundGroupSession *session = olm_outbound_group_session(memory);
 
-    assert_equals((size_t)132,
+    assert_equals((size_t)160,
                   olm_init_outbound_group_session_random_length(session));
 
     size_t res = olm_init_outbound_group_session(
@@ -108,7 +108,6 @@ int main() {
     size_t session_key_len = olm_outbound_group_session_key_length(session);
     uint8_t session_key[session_key_len];
     olm_outbound_group_session_key(session, session_key, session_key_len);
-
 
     /* encode the message */
     uint8_t plaintext[] = "Message";
@@ -131,8 +130,28 @@ int main() {
         olm_inbound_group_session(inbound_session_memory);
 
     res = olm_init_inbound_group_session(
-        inbound_session, 0U, session_key, session_key_len);
+        inbound_session, session_key, session_key_len);
     assert_equals((size_t)0, res);
+
+
+    /* Check the session ids */
+
+    size_t out_session_id_len = olm_outbound_group_session_id_length(session);
+    uint8_t out_session_id[out_session_id_len];
+    assert_equals(out_session_id_len, olm_outbound_group_session_id(
+        session, out_session_id, out_session_id_len
+    ));
+
+    size_t in_session_id_len = olm_inbound_group_session_id_length(
+        inbound_session
+    );
+    uint8_t in_session_id[in_session_id_len];
+    assert_equals(in_session_id_len, olm_inbound_group_session_id(
+        inbound_session, in_session_id, in_session_id_len
+    ));
+
+    assert_equals(in_session_id_len, out_session_id_len);
+    assert_equals(out_session_id, in_session_id, in_session_id_len);
 
     /* decode the message */
 
@@ -147,5 +166,75 @@ int main() {
     assert_equals(plaintext_length, res);
     assert_equals(plaintext, plaintext_buf, res);
 }
+
+{
+    TestCase test_case("Invalid signature group message");
+
+    uint8_t plaintext[] = "Message";
+    size_t plaintext_length = sizeof(plaintext) - 1;
+
+    uint8_t session_key[] =
+        "AgAAAAAwMTIzNDU2Nzg5QUJERUYwMTIzNDU2Nzg5QUJDREVGMDEyMzQ1Njc4OUFCREVGM"
+        "DEyMzQ1Njc4OUFCQ0RFRjAxMjM0NTY3ODlBQkRFRjAxMjM0NTY3ODlBQkNERUYwMTIzND"
+        "U2Nzg5QUJERUYwMTIzNDU2Nzg5QUJDREVGMDEyMztqJ7zOtqQtYqOo0CpvDXNlMhV3HeJ"
+        "DpjrASKGLWdop4lx1cSN3Xv1TgfLPW8rhGiW+hHiMxd36nRuxscNv9k4oJA/KP+o0mi1w"
+        "v44StrEJ1wwx9WZHBUIWkQbaBSuBDw";
+
+    uint8_t message[] =
+        "AwgAEhAcbh6UpbByoyZxufQ+h2B+8XHMjhR69G8nP4pNZGl/3QMgrzCZPmP+F2aPLyKPz"
+        "xRPBMUkeXRJ6Iqm5NeOdx2eERgTW7P20CM+lL3Xpk+ZUOOPvsSQNaAL";
+    size_t msglen = sizeof(message)-1;
+
+    /* build the inbound session */
+    size_t size = olm_inbound_group_session_size();
+    uint8_t inbound_session_memory[size];
+    OlmInboundGroupSession *inbound_session =
+        olm_inbound_group_session(inbound_session_memory);
+
+    size_t res = olm_init_inbound_group_session(
+        inbound_session, session_key, sizeof(session_key)-1
+    );
+    assert_equals((size_t)0, res);
+
+    /* decode the message */
+
+    /* olm_group_decrypt_max_plaintext_length destroys the input so we have to
+       copy it. */
+    uint8_t msgcopy[msglen];
+    memcpy(msgcopy, message, msglen);
+    size = olm_group_decrypt_max_plaintext_length(
+        inbound_session, msgcopy, msglen
+    );
+
+    memcpy(msgcopy, message, msglen);
+    uint8_t plaintext_buf[size];
+    res = olm_group_decrypt(
+        inbound_session, msgcopy, msglen, plaintext_buf, size
+    );
+    assert_equals(plaintext_length, res);
+    assert_equals(plaintext, plaintext_buf, res);
+
+    /* now twiddle the signature */
+    message[msglen-1] = 'E';
+    memcpy(msgcopy, message, msglen);
+    assert_equals(
+        size,
+        olm_group_decrypt_max_plaintext_length(
+            inbound_session, msgcopy, msglen
+        )
+    );
+
+    memcpy(msgcopy, message, msglen);
+    res = olm_group_decrypt(
+        inbound_session, msgcopy, msglen,
+        plaintext_buf, size
+    );
+    assert_equals((size_t)-1, res);
+    assert_equals(
+        std::string("BAD_SIGNATURE"),
+        std::string(olm_inbound_group_session_last_error(inbound_session))
+    );
+}
+
 
 }

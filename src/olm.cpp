@@ -99,6 +99,11 @@ std::size_t b64_input(
 
 extern "C" {
 
+void olm_get_library_version(uint8_t *major, uint8_t *minor, uint8_t *patch) {
+    if (major != NULL) *major = OLMLIB_VERSION_MAJOR;
+    if (minor != NULL) *minor = OLMLIB_VERSION_MINOR;
+    if (patch != NULL) *patch = OLMLIB_VERSION_PATCH;
+}
 
 size_t olm_error() {
     return std::size_t(-1);
@@ -432,14 +437,14 @@ size_t olm_create_outbound_session(
     std::size_t id_key_length = their_identity_key_length;
     std::size_t ot_key_length = their_one_time_key_length;
 
-    if (olm::decode_base64_length(id_key_length) != olm::KEY_LENGTH
-            || olm::decode_base64_length(ot_key_length) != olm::KEY_LENGTH
+    if (olm::decode_base64_length(id_key_length) != CURVE25519_KEY_LENGTH
+            || olm::decode_base64_length(ot_key_length) != CURVE25519_KEY_LENGTH
     ) {
         from_c(session)->last_error = OlmErrorCode::OLM_INVALID_BASE64;
         return std::size_t(-1);
     }
-    olm::Curve25519PublicKey identity_key;
-    olm::Curve25519PublicKey one_time_key;
+    _olm_curve25519_public_key identity_key;
+    _olm_curve25519_public_key one_time_key;
 
     olm::decode_base64(id_key, id_key_length, identity_key.public_key);
     olm::decode_base64(ot_key, ot_key_length, one_time_key.public_key);
@@ -479,11 +484,11 @@ size_t olm_create_inbound_session_from(
     std::uint8_t const * id_key = from_c(their_identity_key);
     std::size_t id_key_length = their_identity_key_length;
 
-    if (olm::decode_base64_length(id_key_length) != olm::KEY_LENGTH) {
+    if (olm::decode_base64_length(id_key_length) != CURVE25519_KEY_LENGTH) {
         from_c(session)->last_error = OlmErrorCode::OLM_INVALID_BASE64;
         return std::size_t(-1);
     }
-    olm::Curve25519PublicKey identity_key;
+    _olm_curve25519_public_key identity_key;
     olm::decode_base64(id_key, id_key_length, identity_key.public_key);
 
     std::size_t raw_length = b64_input(
@@ -525,6 +530,12 @@ size_t olm_session_id(
 }
 
 
+int olm_session_has_received_message(
+    OlmSession * session
+) {
+    return from_c(session)->received_message;
+}
+
 size_t olm_matches_inbound_session(
     OlmSession * session,
     void * one_time_key_message, size_t message_length
@@ -550,11 +561,11 @@ size_t olm_matches_inbound_session_from(
     std::uint8_t const * id_key = from_c(their_identity_key);
     std::size_t id_key_length = their_identity_key_length;
 
-    if (olm::decode_base64_length(id_key_length) != olm::KEY_LENGTH) {
+    if (olm::decode_base64_length(id_key_length) != CURVE25519_KEY_LENGTH) {
         from_c(session)->last_error = OlmErrorCode::OLM_INVALID_BASE64;
         return std::size_t(-1);
     }
-    olm::Curve25519PublicKey identity_key;
+    _olm_curve25519_public_key identity_key;
     olm::decode_base64(id_key, id_key_length, identity_key.public_key);
 
     std::size_t raw_length = b64_input(
@@ -706,11 +717,11 @@ size_t olm_ed25519_verify(
     void const * message, size_t message_length,
     void * signature, size_t signature_length
 ) {
-    if (olm::decode_base64_length(key_length) != olm::KEY_LENGTH) {
+    if (olm::decode_base64_length(key_length) != CURVE25519_KEY_LENGTH) {
         from_c(utility)->last_error = OlmErrorCode::OLM_INVALID_BASE64;
         return std::size_t(-1);
     }
-    olm::Ed25519PublicKey verify_key;
+    _olm_ed25519_public_key verify_key;
     olm::decode_base64(from_c(key), key_length, verify_key.public_key);
     std::size_t raw_signature_length = b64_input(
         from_c(signature), signature_length, from_c(utility)->last_error

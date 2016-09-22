@@ -1,5 +1,10 @@
 #!/usr/bin/make -f
 
+MAJOR := 1
+MINOR := 3
+PATCH := 0
+VERSION := $(MAJOR).$(MINOR).$(PATCH)
+PREFIX ?= /usr/local
 BUILD_DIR := build
 RELEASE_OPTIMIZE_FLAGS ?= -g -O3
 DEBUG_OPTIMIZE_FLAGS ?= -g -O0
@@ -9,8 +14,9 @@ CC = gcc
 EMCC = emcc
 AFL_CC = afl-gcc
 AFL_CXX = afl-g++
-RELEASE_TARGET := $(BUILD_DIR)/libolm.so
-DEBUG_TARGET := $(BUILD_DIR)/libolm_debug.so
+
+RELEASE_TARGET := $(BUILD_DIR)/libolm.so.$(VERSION)
+DEBUG_TARGET := $(BUILD_DIR)/libolm_debug.so.$(VERSION)
 JS_TARGET := javascript/olm.js
 
 JS_EXPORTED_FUNCTIONS := javascript/exported_functions.json
@@ -37,8 +43,15 @@ JS_PRE := $(wildcard javascript/*pre.js)
 JS_POST := javascript/olm_outbound_group_session.js \
     javascript/olm_inbound_group_session.js \
     javascript/olm_post.js
+DOCS := tracing/README.html \
+    docs/olm.html \
+    README.html \
+    CHANGELOG.html
 
-CPPFLAGS += -Iinclude -Ilib
+CPPFLAGS += -Iinclude -Ilib \
+    -DOLMLIB_VERSION_MAJOR=$(MAJOR) -DOLMLIB_VERSION_MINOR=$(MINOR) \
+    -DOLMLIB_VERSION_PATCH=$(PATCH)
+
 # we rely on <stdint.h>, which was introduced in C99
 CFLAGS += -Wall -Werror -std=c99 -fPIC
 CXXFLAGS += -Wall -Werror -std=c++11 -fPIC
@@ -92,16 +105,20 @@ lib: $(RELEASE_TARGET)
 
 $(RELEASE_TARGET): $(RELEASE_OBJECTS)
 	$(CXX) $(LDFLAGS) --shared -fPIC \
+            -Wl,-soname,libolm.so.$(MAJOR) \
             -Wl,--version-script,version_script.ver \
             $(OUTPUT_OPTION) $(RELEASE_OBJECTS)
+	ln -sf libolm.so.$(VERSION) $(BUILD_DIR)/libolm.so.$(MAJOR)
 
 debug: $(DEBUG_TARGET)
 .PHONY: debug
 
 $(DEBUG_TARGET): $(DEBUG_OBJECTS)
 	$(CXX) $(LDFLAGS) --shared -fPIC \
+            -Wl,-soname,libolm_debug.so.$(MAJOR) \
             -Wl,--version-script,version_script.ver \
             $(OUTPUT_OPTION) $(DEBUG_OBJECTS)
+	ln -sf libolm_debug.so.$(VERSION) $(BUILD_DIR)/libolm_debug.so.$(MAJOR)
 
 js: $(JS_TARGET)
 .PHONY: js
@@ -128,12 +145,31 @@ $(JS_EXPORTED_FUNCTIONS): $(PUBLIC_HEADERS)
 	perl -MJSON -ne '$$f{"_$$1"}=1 if /(olm_[^( ]*)\(/; END { @f=sort keys %f; print encode_json \@f }' $^ > $@.tmp
 	mv $@.tmp $@
 
-all: test js lib debug
+all: test js lib debug doc
 .PHONY: all
 
+install-debug: debug
+	test -d $(DESTDIR)$(PREFIX) || mkdir -p $(DESTDIR)$(PREFIX)
+	test -d $(DESTDIR)$(PREFIX)/lib || mkdir $(DESTDIR)$(PREFIX)/lib
+	install -Dm755 $(DEBUG_TARGET) $(DESTDIR)$(PREFIX)/lib/libolm_debug.so.$(VERSION)
+	ln -s libolm_debug.so.$(VERSION) $(DESTDIR)$(PREFIX)/lib/libolm_debug.so.$(MAJOR)
+	ln -s libolm_debug.so.$(VERSION) $(DESTDIR)$(PREFIX)/lib/libolm_debug.so
+.PHONY: install-debug
+
+install: lib
+	test -d $(DESTDIR)$(PREFIX) || mkdir -p $(DESTDIR)$(PREFIX)
+	test -d $(DESTDIR)$(PREFIX)/lib || mkdir $(DESTDIR)$(PREFIX)/lib
+	install -Dm755 $(RELEASE_TARGET) $(DESTDIR)$(PREFIX)/lib/libolm.so.$(VERSION)
+	ln -s libolm.so.$(VERSION) $(DESTDIR)$(PREFIX)/lib/libolm.so.$(MAJOR)
+	ln -s libolm.so.$(VERSION) $(DESTDIR)$(PREFIX)/lib/libolm.so
+.PHONY: install
+
 clean:;
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR) $(DOCS)
 .PHONY: clean
+
+doc: $(DOCS)
+.PHONY: doc
 
 ### rules for building objects
 $(BUILD_DIR)/release/%.o: %.c
@@ -187,6 +223,9 @@ $(BUILD_DIR)/fuzzers/debug_%: fuzzers/fuzz_%.c $(DEBUG_OBJECTS)
 
 $(BUILD_DIR)/fuzzers/debug_%: fuzzers/fuzz_%.cpp $(DEBUG_OBJECTS)
 	$(LINK.cc) $< $(DEBUG_OBJECTS) $(LOADLIBES) $(LDLIBS) -o $@
+
+%.html: %.rst
+	rst2html $< $@
 
 ### dependencies
 

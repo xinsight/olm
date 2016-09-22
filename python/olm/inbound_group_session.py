@@ -33,7 +33,7 @@ inbound_group_session_function(
 )
 
 inbound_group_session_function(
-    lib.olm_init_inbound_group_session, c_uint32, c_void_p, c_size_t
+    lib.olm_init_inbound_group_session, c_void_p, c_size_t
 )
 
 inbound_group_session_function(
@@ -44,6 +44,9 @@ inbound_group_session_function(
     c_void_p, c_size_t, # message
     c_void_p, c_size_t, # plaintext
 )
+
+inbound_group_session_function(lib.olm_inbound_group_session_id_length)
+inbound_group_session_function(lib.olm_inbound_group_session_id, c_void_p, c_size_t)
 
 class InboundGroupSession(object):
     def __init__(self):
@@ -66,10 +69,10 @@ class InboundGroupSession(object):
             self.ptr, key_buffer, len(key), pickle_buffer, len(pickle)
         )
 
-    def init(self, message_index, session_key):
+    def init(self, session_key):
         key_buffer = create_string_buffer(session_key)
         lib.olm_init_inbound_group_session(
-            self.ptr, message_index, key_buffer, len(session_key)
+            self.ptr, key_buffer, len(session_key)
         )
 
     def decrypt(self, message):
@@ -84,3 +87,9 @@ class InboundGroupSession(object):
             plaintext_buffer, max_plaintext_length
         )
         return plaintext_buffer.raw[:plaintext_length]
+
+    def session_id(self):
+        id_length = lib.olm_inbound_group_session_id_length(self.ptr)
+        id_buffer = create_string_buffer(id_length)
+        lib.olm_inbound_group_session_id(self.ptr, id_buffer, id_length);
+        return id_buffer.raw

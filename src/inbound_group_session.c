@@ -19,6 +19,7 @@
 
 #include "olm/base64.h"
 #include "olm/cipher.h"
+#include "olm/crypto.h"
 #include "olm/error.h"
 #include "olm/megolm.h"
 #include "olm/memory.h"
@@ -28,7 +29,9 @@
 
 
 #define OLM_PROTOCOL_VERSION     3
+#define GROUP_SESSION_ID_LENGTH  ED25519_PUBLIC_KEY_LENGTH
 #define PICKLE_VERSION           1
+#define SESSION_KEY_VERSION      2
 
 struct OlmInboundGroupSession {
     /** our earliest known ratchet value */
@@ -36,6 +39,9 @@ struct OlmInboundGroupSession {
 
     /** The most recent ratchet value */
     Megolm latest_ratchet;
+
+    /** The ed25519 signing key */
+    struct _olm_ed25519_public_key signing_key;
 
     enum OlmErrorCode last_error;
 };
@@ -65,30 +71,69 @@ size_t olm_clear_inbound_group_session(
     return sizeof(OlmInboundGroupSession);
 }
 
+#define SESSION_KEY_RAW_LENGTH \
+    (1 + 4 + MEGOLM_RATCHET_LENGTH + ED25519_PUBLIC_KEY_LENGTH\
+        + ED25519_SIGNATURE_LENGTH)
+
+/** init the session keys from the un-base64-ed session keys */
+static size_t _init_group_session_keys(
+    OlmInboundGroupSession *session,
+    const uint8_t *key_buf
+) {
+    const uint8_t *ptr = key_buf;
+    size_t version = *ptr++;
+
+    if (version != SESSION_KEY_VERSION) {
+        session->last_error = OLM_BAD_SESSION_KEY;
+        return (size_t)-1;
+    }
+
+    uint32_t counter = 0;
+    // Decode counter as a big endian 32-bit number.
+    for (unsigned i = 0; i < 4; i++) {
+        counter <<= 8; counter |= *ptr++;
+    }
+
+    megolm_init(&session->initial_ratchet, ptr, counter);
+    megolm_init(&session->latest_ratchet, ptr, counter);
+
+    ptr += MEGOLM_RATCHET_LENGTH;
+    memcpy(
+        session->signing_key.public_key, ptr, ED25519_PUBLIC_KEY_LENGTH
+    );
+    ptr += ED25519_PUBLIC_KEY_LENGTH;
+
+    if (!_olm_crypto_ed25519_verify(
+        &session->signing_key, key_buf, ptr - key_buf, ptr
+    )) {
+        session->last_error = OLM_BAD_SIGNATURE;
+        return (size_t)-1;
+    }
+    return 0;
+}
+
 size_t olm_init_inbound_group_session(
     OlmInboundGroupSession *session,
-    uint32_t message_index,
     const uint8_t * session_key, size_t session_key_length
 ) {
-    uint8_t key_buf[MEGOLM_RATCHET_LENGTH];
+    uint8_t key_buf[SESSION_KEY_RAW_LENGTH];
     size_t raw_length = _olm_decode_base64_length(session_key_length);
+    size_t result;
 
     if (raw_length == (size_t)-1) {
         session->last_error = OLM_INVALID_BASE64;
         return (size_t)-1;
     }
 
-    if (raw_length != MEGOLM_RATCHET_LENGTH) {
+    if (raw_length != SESSION_KEY_RAW_LENGTH) {
         session->last_error = OLM_BAD_SESSION_KEY;
         return (size_t)-1;
     }
 
     _olm_decode_base64(session_key, session_key_length, key_buf);
-    megolm_init(&session->initial_ratchet, key_buf, message_index);
-    megolm_init(&session->latest_ratchet, key_buf, message_index);
-    _olm_unset(key_buf, MEGOLM_RATCHET_LENGTH);
-
-    return 0;
+    result = _init_group_session_keys(session, key_buf);
+    _olm_unset(key_buf, SESSION_KEY_RAW_LENGTH);
+    return result;
 }
 
 static size_t raw_pickle_length(
@@ -98,6 +143,7 @@ static size_t raw_pickle_length(
     length += _olm_pickle_uint32_length(PICKLE_VERSION);
     length += megolm_pickle_length(&session->initial_ratchet);
     length += megolm_pickle_length(&session->latest_ratchet);
+    length += _olm_pickle_ed25519_public_key_length(&session->signing_key);
     return length;
 }
 
@@ -124,6 +170,7 @@ size_t olm_pickle_inbound_group_session(
     pos = _olm_pickle_uint32(pos, PICKLE_VERSION);
     pos = megolm_pickle(&session->initial_ratchet, pos);
     pos = megolm_pickle(&session->latest_ratchet, pos);
+    pos = _olm_pickle_ed25519_public_key(pos, &session->signing_key);
 
     return _olm_enc_output(key, key_length, pickled, raw_length);
 }
@@ -153,6 +200,7 @@ size_t olm_unpickle_inbound_group_session(
     }
     pos = megolm_unpickle(&session->initial_ratchet, pos, end);
     pos = megolm_unpickle(&session->latest_ratchet, pos, end);
+    pos = _olm_unpickle_ed25519_public_key(pos, end, &session->signing_key);
 
     if (end != pos) {
         /* We had the wrong number of bytes in the input. */
@@ -175,6 +223,7 @@ static size_t _decrypt_max_plaintext_length(
     _olm_decode_group_message(
         message, message_length,
         megolm_cipher->ops->mac_length(megolm_cipher),
+        ED25519_SIGNATURE_LENGTH,
         &decoded_results);
 
     if (decoded_results.version != OLM_PROTOCOL_VERSION) {
@@ -224,6 +273,7 @@ static size_t _decrypt(
     _olm_decode_group_message(
         message, message_length,
         megolm_cipher->ops->mac_length(megolm_cipher),
+        ED25519_SIGNATURE_LENGTH,
         &decoded_results);
 
     if (decoded_results.version != OLM_PROTOCOL_VERSION) {
@@ -231,8 +281,24 @@ static size_t _decrypt(
         return (size_t)-1;
     }
 
-    if (!decoded_results.has_message_index || !decoded_results.ciphertext ) {
+    if (!decoded_results.has_message_index || !decoded_results.ciphertext) {
         session->last_error = OLM_BAD_MESSAGE_FORMAT;
+        return (size_t)-1;
+    }
+
+    /* verify the signature. We could do this before decoding the message, but
+     * we allow for the possibility of future protocol versions which use a
+     * different signing mechanism; we would rather throw "BAD_MESSAGE_VERSION"
+     * than "BAD_SIGNATURE" in this case.
+     */
+    message_length -= ED25519_SIGNATURE_LENGTH;
+    r = _olm_crypto_ed25519_verify(
+        &session->signing_key,
+        message, message_length,
+        message + message_length
+    );
+    if (!r) {
+        session->last_error = OLM_BAD_SIGNATURE;
         return (size_t)-1;
     }
 
@@ -296,5 +362,25 @@ size_t olm_group_decrypt(
     return _decrypt(
         session, message, raw_message_length,
         plaintext, max_plaintext_length
+    );
+}
+
+size_t olm_inbound_group_session_id_length(
+    const OlmInboundGroupSession *session
+) {
+    return _olm_encode_base64_length(GROUP_SESSION_ID_LENGTH);
+}
+
+size_t olm_inbound_group_session_id(
+    OlmInboundGroupSession *session,
+    uint8_t * id, size_t id_length
+) {
+    if (id_length < olm_inbound_group_session_id_length(session)) {
+        session->last_error = OLM_OUTPUT_BUFFER_TOO_SMALL;
+        return (size_t)-1;
+    }
+
+    return _olm_encode_base64(
+        session->signing_key.public_key, GROUP_SESSION_ID_LENGTH, id
     );
 }

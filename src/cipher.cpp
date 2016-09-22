@@ -13,16 +13,18 @@
  * limitations under the License.
  */
 #include "olm/cipher.h"
-#include "olm/crypto.hh"
+#include "olm/crypto.h"
 #include "olm/memory.hh"
 #include <cstring>
+
+const std::size_t HMAC_KEY_LENGTH = 32;
 
 namespace {
 
 struct DerivedKeys {
-    olm::Aes256Key aes_key;
-    std::uint8_t mac_key[olm::KEY_LENGTH];
-    olm::Aes256Iv aes_iv;
+    _olm_aes256_key aes_key;
+    std::uint8_t mac_key[HMAC_KEY_LENGTH];
+    _olm_aes256_iv aes_iv;
 };
 
 
@@ -31,7 +33,9 @@ static void derive_keys(
     std::uint8_t const * key, std::size_t key_length,
     DerivedKeys & keys
 ) {
-    std::uint8_t derived_secrets[2 * olm::KEY_LENGTH + olm::IV_LENGTH];
+    std::uint8_t derived_secrets[
+        AES256_KEY_LENGTH + HMAC_KEY_LENGTH + AES256_IV_LENGTH
+    ];
     _olm_crypto_hkdf_sha256(
         key, key_length,
         nullptr, 0,
@@ -54,7 +58,7 @@ size_t aes_sha_256_cipher_mac_length(const struct _olm_cipher *cipher) {
 size_t aes_sha_256_cipher_encrypt_ciphertext_length(
         const struct _olm_cipher *cipher, size_t plaintext_length
 ) {
-    return olm::aes_encrypt_cbc_length(plaintext_length);
+    return _olm_crypto_aes_encrypt_cbc_length(plaintext_length);
 }
 
 size_t aes_sha_256_cipher_encrypt(
@@ -76,12 +80,12 @@ size_t aes_sha_256_cipher_encrypt(
 
     derive_keys(c->kdf_info, c->kdf_info_length, key, key_length, keys);
 
-    olm::aes_encrypt_cbc(
-        keys.aes_key, keys.aes_iv, plaintext, plaintext_length, ciphertext
+    _olm_crypto_aes_encrypt_cbc(
+        &keys.aes_key, &keys.aes_iv, plaintext, plaintext_length, ciphertext
     );
 
     _olm_crypto_hmac_sha256(
-        keys.mac_key, olm::KEY_LENGTH, output, output_length - MAC_LENGTH, mac
+        keys.mac_key, HMAC_KEY_LENGTH, output, output_length - MAC_LENGTH, mac
     );
 
     std::memcpy(output + output_length - MAC_LENGTH, mac, MAC_LENGTH);
@@ -113,7 +117,7 @@ size_t aes_sha_256_cipher_decrypt(
     derive_keys(c->kdf_info, c->kdf_info_length, key, key_length, keys);
 
     _olm_crypto_hmac_sha256(
-        keys.mac_key, olm::KEY_LENGTH, input, input_length - MAC_LENGTH, mac
+        keys.mac_key, HMAC_KEY_LENGTH, input, input_length - MAC_LENGTH, mac
     );
 
     std::uint8_t const * input_mac = input + input_length - MAC_LENGTH;
@@ -122,8 +126,8 @@ size_t aes_sha_256_cipher_decrypt(
         return std::size_t(-1);
     }
 
-    std::size_t plaintext_length = olm::aes_decrypt_cbc(
-        keys.aes_key, keys.aes_iv, ciphertext, ciphertext_length, plaintext
+    std::size_t plaintext_length = _olm_crypto_aes_decrypt_cbc(
+        &keys.aes_key, &keys.aes_iv, ciphertext, ciphertext_length, plaintext
     );
 
     olm::unset(keys);

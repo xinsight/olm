@@ -14,7 +14,7 @@
  */
 #include "olm/session.hh"
 #include "olm/cipher.h"
-#include "olm/crypto.hh"
+#include "olm/crypto.h"
 #include "olm/account.hh"
 #include "olm/logging.h"
 #include "olm/memory.hh"
@@ -41,6 +41,23 @@ static const olm::KdfInfo OLM_KDF_INFO = {
 static const struct _olm_cipher_aes_sha_256 OLM_CIPHER =
     OLM_CIPHER_INIT_AES_SHA_256(CIPHER_KDF_INFO);
 
+
+static std::string to_string(const _olm_curve25519_public_key *key) {
+    return olm::bytes_to_string(
+        std::begin(key->public_key),
+        std::end(key->public_key)
+    );
+};
+
+static std::string to_string(const _olm_curve25519_key_pair *key) {
+    return olm::bytes_to_string(
+        std::begin(key->public_key.public_key),
+        std::end(key->public_key.public_key)
+    );
+};
+
+
+
 } // namespace
 
 olm::Session::Session(
@@ -52,14 +69,14 @@ olm::Session::Session(
 
 
 std::size_t olm::Session::new_outbound_session_random_length() {
-    return olm::KEY_LENGTH * 2;
+    return CURVE25519_RANDOM_LENGTH * 2;
 }
 
 
 std::size_t olm::Session::new_outbound_session(
     olm::Account const & local_account,
-    olm::Curve25519PublicKey const & identity_key,
-    olm::Curve25519PublicKey const & one_time_key,
+    _olm_curve25519_public_key const & identity_key,
+    _olm_curve25519_public_key const & one_time_key,
     std::uint8_t const * random, std::size_t random_length
 ) {
     if (random_length < new_outbound_session_random_length()) {
@@ -69,37 +86,38 @@ std::size_t olm::Session::new_outbound_session(
 
     olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY,
               "Creating new outbound session to receiver identity IB %s, "
-              "receiver ephemeral EB %s", identity_key.to_string().c_str(),
-              one_time_key.to_string().c_str()
+              "receiver ephemeral EB %s", to_string(&identity_key).c_str(),
+              to_string(&one_time_key).c_str()
     );
 
-    olm::Curve25519KeyPair base_key;
-    olm::curve25519_generate_key(random, base_key);
+    _olm_curve25519_key_pair base_key;
+    _olm_crypto_curve25519_generate_key(random, &base_key);
     olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY, "Created new ephemeral key EA %s",
-              base_key.to_string().c_str());
+              to_string(&base_key).c_str());
 
-    olm::Curve25519KeyPair ratchet_key;
-    olm::curve25519_generate_key(random + olm::KEY_LENGTH, ratchet_key);
+    _olm_curve25519_key_pair ratchet_key;
+    _olm_crypto_curve25519_generate_key(random + CURVE25519_RANDOM_LENGTH, &ratchet_key);
     olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY, "Created new ratchet key T(0) %s",
-              ratchet_key.to_string().c_str());
+              to_string(&ratchet_key).c_str());
 
-    olm::Curve25519KeyPair const & alice_identity_key_pair = (
+    _olm_curve25519_key_pair const & alice_identity_key_pair = (
         local_account.identity_keys.curve25519_key
     );
 
     received_message = false;
-    alice_identity_key = alice_identity_key_pair;
-    alice_base_key = base_key;
+    alice_identity_key = alice_identity_key_pair.public_key;
+    alice_base_key = base_key.public_key;
     bob_one_time_key = one_time_key;
 
-    std::uint8_t secret[3 * olm::KEY_LENGTH];
+    // Calculate the shared secret S via triple DH
+    std::uint8_t secret[3 * CURVE25519_SHARED_SECRET_LENGTH];
     std::uint8_t * pos = secret;
 
-    olm::curve25519_shared_secret(alice_identity_key_pair, one_time_key, pos);
-    pos += olm::KEY_LENGTH;
-    olm::curve25519_shared_secret(base_key, identity_key, pos);
-    pos += olm::KEY_LENGTH;
-    olm::curve25519_shared_secret(base_key, one_time_key, pos);
+    _olm_crypto_curve25519_shared_secret(&alice_identity_key_pair, &one_time_key, pos);
+    pos += CURVE25519_SHARED_SECRET_LENGTH;
+    _olm_crypto_curve25519_shared_secret(&base_key, &identity_key, pos);
+    pos += CURVE25519_SHARED_SECRET_LENGTH;
+    _olm_crypto_curve25519_shared_secret(&base_key, &one_time_key, pos);
 
     ratchet.initialise_as_alice(secret, sizeof(secret), ratchet_key);
 
@@ -119,13 +137,13 @@ static bool check_message_fields(
     bool ok = true;
     ok = ok && (have_their_identity_key || reader.identity_key);
     if (reader.identity_key) {
-        ok = ok && reader.identity_key_length == olm::KEY_LENGTH;
+        ok = ok && reader.identity_key_length == CURVE25519_KEY_LENGTH;
     }
     ok = ok && reader.message;
     ok = ok && reader.base_key;
-    ok = ok && reader.base_key_length == olm::KEY_LENGTH;
+    ok = ok && reader.base_key_length == CURVE25519_KEY_LENGTH;
     ok = ok && reader.one_time_key;
-    ok = ok && reader.one_time_key_length == olm::KEY_LENGTH;
+    ok = ok && reader.one_time_key_length == CURVE25519_KEY_LENGTH;
     return ok;
 }
 
@@ -134,7 +152,7 @@ static bool check_message_fields(
 
 std::size_t olm::Session::new_inbound_session(
     olm::Account & local_account,
-    olm::Curve25519PublicKey const * their_identity_key,
+    _olm_curve25519_public_key const * their_identity_key,
     std::uint8_t const * one_time_key_message, std::size_t message_length
 ) {
     olm::PreKeyMessageReader reader;
@@ -147,16 +165,17 @@ std::size_t olm::Session::new_inbound_session(
 
     if (reader.identity_key && their_identity_key) {
         bool same = 0 == std::memcmp(
-            their_identity_key->public_key, reader.identity_key, olm::KEY_LENGTH
+            their_identity_key->public_key, reader.identity_key, CURVE25519_KEY_LENGTH
         );
         if (!same) {
             olm_logf(OLM_LOG_INFO, LOG_CATEGORY,
                       "Identity key on received message is incorrect "
                       "(expected %s, got %s)",
-                      their_identity_key->to_string().c_str(),
-                      olm::bytes_to_string(reader.identity_key,
-                                           reader.identity_key + olm::KEY_LENGTH)
-                          .c_str());
+                      to_string(their_identity_key).c_str(),
+                      olm::bytes_to_string(
+                          reader.identity_key,
+                          reader.identity_key + CURVE25519_KEY_LENGTH
+                      ).c_str());
             last_error = OlmErrorCode::OLM_BAD_MESSAGE_KEY_ID;
             return std::size_t(-1);
         }
@@ -169,9 +188,9 @@ std::size_t olm::Session::new_inbound_session(
     olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY,
               "Creating new inbound session from sender identity IA %s, "
               "sender ephemeral EA %s, our ephemeral EB %s",
-              alice_identity_key.to_string().c_str(),
-              alice_base_key.to_string().c_str(),
-              bob_one_time_key.to_string().c_str());
+              to_string(&alice_identity_key).c_str(),
+              to_string(&alice_base_key).c_str(),
+              to_string(&bob_one_time_key).c_str());
 
     olm::MessageReader message_reader;
     decode_message(
@@ -180,16 +199,16 @@ std::size_t olm::Session::new_inbound_session(
     );
 
     if (!message_reader.ratchet_key
-            || message_reader.ratchet_key_length != olm::KEY_LENGTH) {
+            || message_reader.ratchet_key_length != CURVE25519_KEY_LENGTH) {
         last_error = OlmErrorCode::OLM_BAD_MESSAGE_FORMAT;
         return std::size_t(-1);
     }
 
-    olm::Curve25519PublicKey ratchet_key;
+    _olm_curve25519_public_key ratchet_key;
     olm::load_array(ratchet_key.public_key, message_reader.ratchet_key);
 
     olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY,
-              "Received ratchet key T(0) %s", ratchet_key.to_string().c_str());
+              "Received ratchet key T(0) %s", to_string(&ratchet_key).c_str());
 
     olm::OneTimeKey const * our_one_time_key = local_account.lookup_key(
         bob_one_time_key
@@ -198,23 +217,24 @@ std::size_t olm::Session::new_inbound_session(
     if (!our_one_time_key) {
         olm_logf(OLM_LOG_INFO, LOG_CATEGORY,
                   "Session uses unknown ephemeral key %s",
-                  bob_one_time_key.to_string().c_str());
+                  to_string(&bob_one_time_key).c_str());
         last_error = OlmErrorCode::OLM_BAD_MESSAGE_KEY_ID;
         return std::size_t(-1);
     }
 
-    olm::Curve25519KeyPair const & bob_identity_key = (
+    _olm_curve25519_key_pair const & bob_identity_key = (
         local_account.identity_keys.curve25519_key
     );
-    olm::Curve25519KeyPair const & bob_one_time_key = our_one_time_key->key;
+    _olm_curve25519_key_pair const & bob_one_time_key = our_one_time_key->key;
 
-    std::uint8_t secret[olm::KEY_LENGTH * 3];
+    // Calculate the shared secret S via triple DH
+    std::uint8_t secret[CURVE25519_SHARED_SECRET_LENGTH * 3];
     std::uint8_t * pos = secret;
-    olm::curve25519_shared_secret(bob_one_time_key, alice_identity_key, pos);
-    pos += olm::KEY_LENGTH;
-    olm::curve25519_shared_secret(bob_identity_key, alice_base_key, pos);
-    pos += olm::KEY_LENGTH;
-    olm::curve25519_shared_secret(bob_one_time_key, alice_base_key, pos);
+    _olm_crypto_curve25519_shared_secret(&bob_one_time_key, &alice_identity_key, pos);
+    pos += CURVE25519_SHARED_SECRET_LENGTH;
+    _olm_crypto_curve25519_shared_secret(&bob_identity_key, &alice_base_key, pos);
+    pos += CURVE25519_SHARED_SECRET_LENGTH;
+    _olm_crypto_curve25519_shared_secret(&bob_one_time_key, &alice_base_key, pos);
 
     ratchet.initialise_as_bob(secret, sizeof(secret), ratchet_key);
 
@@ -237,7 +257,7 @@ std::size_t olm::Session::session_id(
         last_error = OlmErrorCode::OLM_OUTPUT_BUFFER_TOO_SMALL;
         return std::size_t(-1);
     }
-    std::uint8_t tmp[olm::KEY_LENGTH * 3];
+    std::uint8_t tmp[CURVE25519_KEY_LENGTH * 3];
     std::uint8_t * pos = tmp;
     pos = olm::store_array(pos, alice_identity_key.public_key);
     pos = olm::store_array(pos, alice_base_key.public_key);
@@ -248,7 +268,7 @@ std::size_t olm::Session::session_id(
 
 
 bool olm::Session::matches_inbound_session(
-    olm::Curve25519PublicKey const * their_identity_key,
+    _olm_curve25519_public_key const * their_identity_key,
     std::uint8_t const * one_time_key_message, std::size_t message_length
 ) {
     olm::PreKeyMessageReader reader;
@@ -261,20 +281,20 @@ bool olm::Session::matches_inbound_session(
     bool same = true;
     if (reader.identity_key) {
         same = same && 0 == std::memcmp(
-            reader.identity_key, alice_identity_key.public_key, olm::KEY_LENGTH
+            reader.identity_key, alice_identity_key.public_key, CURVE25519_KEY_LENGTH
         );
     }
     if (their_identity_key) {
         same = same && 0 == std::memcmp(
             their_identity_key->public_key, alice_identity_key.public_key,
-            olm::KEY_LENGTH
+            CURVE25519_KEY_LENGTH
         );
     }
     same = same && 0 == std::memcmp(
-        reader.base_key, alice_base_key.public_key, olm::KEY_LENGTH
+        reader.base_key, alice_base_key.public_key, CURVE25519_KEY_LENGTH
     );
     same = same && 0 == std::memcmp(
-        reader.one_time_key, bob_one_time_key.public_key, olm::KEY_LENGTH
+        reader.one_time_key, bob_one_time_key.public_key, CURVE25519_KEY_LENGTH
     );
     return same;
 }
@@ -301,9 +321,9 @@ std::size_t olm::Session::encrypt_message_length(
     }
 
     return encode_one_time_key_message_length(
-        olm::KEY_LENGTH,
-        olm::KEY_LENGTH,
-        olm::KEY_LENGTH,
+        CURVE25519_KEY_LENGTH,
+        CURVE25519_KEY_LENGTH,
+        CURVE25519_KEY_LENGTH,
         message_length
     );
 }
@@ -338,9 +358,9 @@ std::size_t olm::Session::encrypt(
         encode_one_time_key_message(
             writer,
             PROTOCOL_VERSION,
-            olm::KEY_LENGTH,
-            olm::KEY_LENGTH,
-            olm::KEY_LENGTH,
+            CURVE25519_KEY_LENGTH,
+            CURVE25519_KEY_LENGTH,
+            CURVE25519_KEY_LENGTH,
             message_body_length,
             message
         );
@@ -354,9 +374,9 @@ std::size_t olm::Session::encrypt(
                   "Encoded pre-key message ver=%i one_time_key[Eb]=%s "
                   "base_key[Ea]=%s identity_key[Ia]=%s",
                   PROTOCOL_VERSION,
-                  olm::bytes_to_string(writer.one_time_key, olm::KEY_LENGTH).c_str(),
-                  olm::bytes_to_string(writer.base_key, olm::KEY_LENGTH).c_str(),
-                  olm::bytes_to_string(writer.identity_key, olm::KEY_LENGTH).c_str()
+                  olm::bytes_to_string(writer.one_time_key, CURVE25519_KEY_LENGTH).c_str(),
+                  olm::bytes_to_string(writer.base_key, CURVE25519_KEY_LENGTH).c_str(),
+                  olm::bytes_to_string(writer.identity_key, CURVE25519_KEY_LENGTH).c_str()
         );
     }
 

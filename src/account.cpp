@@ -15,6 +15,7 @@
 #include "olm/account.hh"
 #include "olm/base64.hh"
 #include "olm/logging.h"
+#include "olm/pickle.h"
 #include "olm/pickle.hh"
 #include "olm/memory.hh"
 
@@ -27,10 +28,10 @@ olm::Account::Account(
 
 
 olm::OneTimeKey const * olm::Account::lookup_key(
-    olm::Curve25519PublicKey const & public_key
+    _olm_curve25519_public_key const & public_key
 ) {
     for (olm::OneTimeKey const & key : one_time_keys) {
-        if (olm::array_equal(key.key.public_key, public_key.public_key)) {
+        if (olm::array_equal(key.key.public_key.public_key, public_key.public_key)) {
             return &key;
         }
     }
@@ -38,11 +39,11 @@ olm::OneTimeKey const * olm::Account::lookup_key(
 }
 
 std::size_t olm::Account::remove_key(
-    olm::Curve25519PublicKey const & public_key
+    _olm_curve25519_public_key const & public_key
 ) {
     OneTimeKey * i;
     for (i = one_time_keys.begin(); i != one_time_keys.end(); ++i) {
-        if (olm::array_equal(i->key.public_key, public_key.public_key)) {
+        if (olm::array_equal(i->key.public_key.public_key, public_key.public_key)) {
             std::uint32_t id = i->id;
             one_time_keys.erase(i);
             olm_logf(OLM_LOG_INFO, LOG_CATEGORY, "removed key id %i", id);
@@ -54,7 +55,7 @@ std::size_t olm::Account::remove_key(
 }
 
 std::size_t olm::Account::new_account_random_length() {
-    return 2 * olm::KEY_LENGTH;
+    return ED25519_RANDOM_LENGTH + CURVE25519_RANDOM_LENGTH;
 }
 
 std::size_t olm::Account::new_account(
@@ -65,9 +66,9 @@ std::size_t olm::Account::new_account(
         return std::size_t(-1);
     }
 
-    olm::ed25519_generate_key(random, identity_keys.ed25519_key);
-    random += KEY_LENGTH;
-    olm::curve25519_generate_key(random, identity_keys.curve25519_key);
+    _olm_crypto_ed25519_generate_key(random, &identity_keys.ed25519_key);
+    random += ED25519_RANDOM_LENGTH;
+    _olm_crypto_curve25519_generate_key(random, &identity_keys.curve25519_key);
 
     olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY, "Created new account");
 
@@ -125,16 +126,16 @@ std::size_t olm::Account::get_identity_json(
     pos = write_string(pos, KEY_JSON_CURVE25519);
     *(pos++) = '\"';
     pos = olm::encode_base64(
-        identity_keys.curve25519_key.public_key,
-        sizeof(identity_keys.curve25519_key.public_key),
+        identity_keys.curve25519_key.public_key.public_key,
+        sizeof(identity_keys.curve25519_key.public_key.public_key),
         pos
     );
     *(pos++) = '\"'; *(pos++) = ',';
     pos = write_string(pos, KEY_JSON_ED25519);
     *(pos++) = '\"';
     pos = olm::encode_base64(
-        identity_keys.ed25519_key.public_key,
-        sizeof(identity_keys.ed25519_key.public_key),
+        identity_keys.ed25519_key.public_key.public_key,
+        sizeof(identity_keys.ed25519_key.public_key.public_key),
         pos
     );
     *(pos++) = '\"'; *(pos++) = '}';
@@ -144,7 +145,7 @@ std::size_t olm::Account::get_identity_json(
 
 std::size_t olm::Account::signature_length(
 ) {
-    return olm::SIGNATURE_LENGTH;
+    return ED25519_SIGNATURE_LENGTH;
 }
 
 
@@ -156,8 +157,8 @@ std::size_t olm::Account::sign(
         last_error = OlmErrorCode::OLM_OUTPUT_BUFFER_TOO_SMALL;
         return std::size_t(-1);
     }
-    olm::ed25519_sign(
-        identity_keys.ed25519_key, message, message_length, signature
+    _olm_crypto_ed25519_sign(
+        &identity_keys.ed25519_key, message, message_length, signature
     );
     return this->signature_length();
 }
@@ -209,7 +210,7 @@ std::size_t olm::Account::get_one_time_keys_json(
         pos = olm::encode_base64(key_id, sizeof(key_id), pos);
         *(pos++) = '\"'; *(pos++) = ':'; *(pos++) = '\"';
         pos = olm::encode_base64(
-            key.key.public_key, sizeof(key.key.public_key), pos
+            key.key.public_key.public_key, sizeof(key.key.public_key.public_key), pos
         );
         *(pos++) = '\"';
         sep = ',';
@@ -245,7 +246,7 @@ std::size_t olm::Account::max_number_of_one_time_keys(
 std::size_t olm::Account::generate_one_time_keys_random_length(
     std::size_t number_of_keys
 ) {
-    return olm::KEY_LENGTH * number_of_keys;
+    return CURVE25519_RANDOM_LENGTH * number_of_keys;
 }
 
 std::size_t olm::Account::generate_one_time_keys(
@@ -260,8 +261,8 @@ std::size_t olm::Account::generate_one_time_keys(
         OneTimeKey & key = *one_time_keys.insert(one_time_keys.begin());
         key.id = ++next_one_time_key_id;
         key.published = false;
-        olm::curve25519_generate_key(random, key.key);
-        random += olm::KEY_LENGTH;
+        _olm_crypto_curve25519_generate_key(random, &key.key);
+        random += CURVE25519_RANDOM_LENGTH;
     }
     return number_of_keys;
 }
@@ -272,7 +273,7 @@ static std::size_t pickle_length(
     olm::IdentityKeys const & value
 ) {
     size_t length = 0;
-    length += olm::pickle_length(value.ed25519_key);
+    length += _olm_pickle_ed25519_key_pair_length(&value.ed25519_key);
     length += olm::pickle_length(value.curve25519_key);
     return length;
 }
@@ -282,7 +283,7 @@ static std::uint8_t * pickle(
     std::uint8_t * pos,
     olm::IdentityKeys const & value
 ) {
-    pos = olm::pickle(pos, value.ed25519_key);
+    pos = _olm_pickle_ed25519_key_pair(pos, &value.ed25519_key);
     pos = olm::pickle(pos, value.curve25519_key);
     return pos;
 }
@@ -292,7 +293,7 @@ static std::uint8_t const * unpickle(
     std::uint8_t const * pos, std::uint8_t const * end,
     olm::IdentityKeys & value
 ) {
-    pos = olm::unpickle(pos, end, value.ed25519_key);
+    pos = _olm_unpickle_ed25519_key_pair(pos, end, &value.ed25519_key);
     pos = olm::unpickle(pos, end, value.curve25519_key);
     return pos;
 }
@@ -333,7 +334,9 @@ static std::uint8_t const * unpickle(
 } // namespace olm
 
 namespace {
-static const std::uint32_t ACCOUNT_PICKLE_VERSION = 1;
+// pickle version 1 used only 32 bytes for the ed25519 private key.
+// Any keys thus used should be considered compromised.
+static const std::uint32_t ACCOUNT_PICKLE_VERSION = 2;
 }
 
 
@@ -367,9 +370,15 @@ std::uint8_t const * olm::unpickle(
 ) {
     uint32_t pickle_version;
     pos = olm::unpickle(pos, end, pickle_version);
-    if (pickle_version != ACCOUNT_PICKLE_VERSION) {
-        value.last_error = OlmErrorCode::OLM_UNKNOWN_PICKLE_VERSION;
-        return end;
+    switch (pickle_version) {
+        case ACCOUNT_PICKLE_VERSION:
+            break;
+        case 1:
+            value.last_error = OlmErrorCode::OLM_BAD_LEGACY_ACCOUNT_PICKLE;
+            return end;
+        default:
+            value.last_error = OlmErrorCode::OLM_UNKNOWN_PICKLE_VERSION;
+            return end;
     }
     pos = olm::unpickle(pos, end, value.identity_keys);
     pos = olm::unpickle(pos, end, value.one_time_keys);
