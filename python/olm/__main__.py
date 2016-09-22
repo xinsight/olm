@@ -10,6 +10,11 @@ import yaml
 
 from . import *
 
+def read_base64_file(filename):
+    """Read a base64 file, dropping any CR/LF characters"""
+    with open(filename, "rb") as f:
+        return f.read().translate(None, "\r\n")
+
 def build_arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--key", help="Account encryption key", default="")
@@ -39,8 +44,7 @@ def build_arg_parser():
 
     def do_keys(args):
         account = Account()
-        with open(args.account_file, "rb") as f:
-            account.unpickle(args.key, f.read())
+        account.unpickle(args.key, read_base64_file(args.account_file))
         result = {
             "account_keys": account.identity_keys(),
             "one_time_keys": account.one_time_keys(),
@@ -57,8 +61,7 @@ def build_arg_parser():
 
     def do_id_key(args):
         account = Account()
-        with open(args.account_file, "rb") as f:
-            account.unpickle(args.key, f.read())
+        account.unpickle(args.key, read_base64_file(args.account_file))
         print(account.identity_keys()['curve25519'])
 
     id_key = commands.add_parser("identity_key", help="Get the identity key for an account")
@@ -67,8 +70,7 @@ def build_arg_parser():
 
     def do_one_time_key(args):
         account = Account()
-        with open(args.account_file, "rb") as f:
-            account.unpickle(args.key, f.read())
+        account.unpickle(args.key, read_base64_file(args.account_file))
         keys = account.one_time_keys()['curve25519'].values()
         key_num = args.key_num
         if key_num < 1 or key_num > len(keys):
@@ -95,8 +97,7 @@ def build_arg_parser():
 
     def do_sign(args):
         account = Account()
-        with open(args.account_file, "rb") as f:
-            account.unpickle(args.key, f.read())
+        account.unpickle(args.key, read_base64_file(args.account_file))
         with open_in(args.message_file) as f:
              message = f.read()
         signature = account.sign(message)
@@ -112,8 +113,7 @@ def build_arg_parser():
 
     def do_generate_keys(args):
         account = Account()
-        with open(args.account_file, "rb") as f:
-            account.unpickle(args.key, f.read())
+        account.unpickle(args.key, read_base64_file(args.account_file))
         account.generate_one_time_keys(args.count)
         with open(args.account_file, "wb") as f:
             f.write(account.pickle(args.key))
@@ -134,8 +134,7 @@ def build_arg_parser():
             ))
             sys.exit(1)
         account = Account()
-        with open(args.account_file, "rb") as f:
-            account.unpickle(args.key, f.read())
+        account.unpickle(args.key, read_base64_file(args.account_file))
         session = Session()
         session.create_outbound(
             account, args.identity_key, args.one_time_key
@@ -170,8 +169,7 @@ def build_arg_parser():
             ))
             sys.exit(1)
         account = Account()
-        with open(args.account_file, "rb") as f:
-            account.unpickle(args.key, f.read())
+        account.unpickle(args.key, read_base64_file(args.account_file))
         with open_in(args.message_file) as f:
             message_type = f.read(8)
             message = f.read()
@@ -193,8 +191,7 @@ def build_arg_parser():
 
     def do_session_id(args):
         session = Session()
-        with open(args.session_file, "rb") as f:
-            session.unpickle(args.key, f.read())
+        session.unpickle(args.key, read_base64_file(args.session_file))
         sys.stdout.write(session.session_id() + "\n")
 
     session_id.set_defaults(func=do_session_id)
@@ -206,8 +203,7 @@ def build_arg_parser():
 
     def do_encrypt(args):
         session = Session()
-        with open(args.session_file, "rb") as f:
-            session.unpickle(args.key, f.read())
+        session.unpickle(args.key, read_base64_file(args.session_file))
         with open_in(args.plaintext_file) as f:
             plaintext = f.read()
         message_type, message = session.encrypt(plaintext)
@@ -226,8 +222,7 @@ def build_arg_parser():
 
     def do_decrypt(args):
         session = Session()
-        with open(args.session_file, "rb") as f:
-            session.unpickle(args.key, f.read())
+        session.unpickle(args.key, read_base64_file(args.session_file))
         with open_in(args.message_file) as f:
             message_type = f.read(8)
             message = f.read()
@@ -298,8 +293,7 @@ def do_outbound_group(args):
 
 def do_group_encrypt(args):
     session = OutboundGroupSession()
-    with open(args.session_file, "rb") as f:
-        session.unpickle(args.key, f.read())
+    session.unpickle(args.key, read_base64_file(args.session_file))
     plaintext = args.plaintext_file.read()
     message = session.encrypt(plaintext)
     with open(args.session_file, "wb") as f:
@@ -308,8 +302,7 @@ def do_group_encrypt(args):
 
 def do_group_credentials(args):
     session = OutboundGroupSession()
-    with open(args.session_file, "rb") as f:
-        session.unpickle(args.key, f.read())
+    session.unpickle(args.key, read_base64_file(args.session_file))
     result = {
         'message_index': session.message_index(),
         'session_key': session.session_key(),
@@ -323,20 +316,19 @@ def do_inbound_group(args):
         ))
         sys.exit(1)
     credentials = json.load(args.credentials_file)
-    for k in ('message_index', 'session_key'):
+    for k in ('session_key', ):
         if not k in credentials:
             sys.stderr.write("Credentials file is missing %s\n" % k)
             sys.exit(1);
 
     session = InboundGroupSession()
-    session.init(credentials['message_index'], credentials['session_key'])
+    session.init(credentials['session_key'])
     with open(args.session_file, "wb") as f:
         f.write(session.pickle(args.key))
 
 def do_group_decrypt(args):
     session = InboundGroupSession()
-    with open(args.session_file, "rb") as f:
-        session.unpickle(args.key, f.read())
+    session.unpickle(args.key, read_base64_file(args.session_file))
     message = args.message_file.read()
     plaintext = session.decrypt(message)
     with open(args.session_file, "wb") as f:
