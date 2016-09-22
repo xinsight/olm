@@ -13,6 +13,8 @@ from . import *
 def build_arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--key", help="Account encryption key", default="")
+    parser.add_argument("--log-level", help="Log level", type=int, default=None)
+
     commands = parser.add_subparsers()
 
     create_account = commands.add_parser("create_account", help="Create a new account")
@@ -344,4 +346,7 @@ def do_group_decrypt(args):
 if __name__ == '__main__':
     parser = build_arg_parser()
     args = parser.parse_args()
+    if args.log_level is not None:
+        set_log_level(args.log_level)
+
     args.func(args)

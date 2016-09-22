@@ -2,6 +2,11 @@ import json
 
 from ._base import *
 
+lib.olm_set_log_level.argtypes = [c_uint]
+lib.olm_set_log_level.restype = None
+
+set_log_level = lib.olm_set_log_level
+
 lib.olm_account_size.argtypes = []
 lib.olm_account_size.restype = c_size_t
 
