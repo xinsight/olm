@@ -52,6 +52,11 @@ static void create_chain_key(
 ) {
     olm::SharedKey secret;
     _olm_crypto_curve25519_shared_secret(&our_key, &their_key, secret);
+    olm_logf(
+        OLM_LOG_TRACE, LOG_CATEGORY, "Shared secret for new chain: %s",
+        olm::bytes_to_string(secret, olm::OLM_SHARED_KEY_LENGTH).c_str()
+    );
+
     std::uint8_t derived_secrets[2 * olm::OLM_SHARED_KEY_LENGTH];
     _olm_crypto_hkdf_sha256(
         secret, sizeof(secret),
@@ -96,7 +101,10 @@ static void create_message_keys(
     );
     message_key.index = chain_key.index;
     olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY, "Created message key with chain key C(%i,%i)",
-              chain_index, message_key.index);
+             chain_index, message_key.index);
+    olm_logf(OLM_LOG_TRACE, LOG_CATEGORY, "Message key for C(%i,%i) is %s",
+             chain_index, message_key.index,
+             olm::bytes_to_string(message_key.key, olm::OLM_SHARED_KEY_LENGTH).c_str());
 }
 
 
@@ -221,6 +229,11 @@ void olm::Ratchet::initialise_as_bob(
     chain_index = 0;
     olm::unset(derived_secrets);
     olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY, "Initialised receiver chain R(0)");
+    olm_logf(OLM_LOG_TRACE, LOG_CATEGORY, "Root key R(0) is %s",
+             olm::bytes_to_string(root_key, olm::OLM_SHARED_KEY_LENGTH).c_str());
+    olm_logf(OLM_LOG_TRACE, LOG_CATEGORY, "Chain key C(0,0) is %s",
+             olm::bytes_to_string(receiver_chains[0].chain_key.key,
+                                  olm::OLM_SHARED_KEY_LENGTH).c_str());
 }
 
 
@@ -474,6 +487,15 @@ std::size_t olm::Ratchet::encrypt(
         );
         olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY, "Initialised new sender chain R(%i)",
                   chain_index + 1);
+        olm_logf(
+            OLM_LOG_TRACE, LOG_CATEGORY, "Root key R(%i): %s", chain_index + 1,
+            olm::bytes_to_string(root_key, OLM_SHARED_KEY_LENGTH).c_str()
+        );
+        olm_logf(
+            OLM_LOG_TRACE, LOG_CATEGORY, "Chain key C(%i, 0): %s", chain_index + 1,
+            olm::bytes_to_string(sender_chain[0].chain_key.key, OLM_SHARED_KEY_LENGTH).c_str()
+        );
+
         chain_index++;
     }
 

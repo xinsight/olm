@@ -119,6 +119,9 @@ std::size_t olm::Session::new_outbound_session(
     pos += CURVE25519_SHARED_SECRET_LENGTH;
     _olm_crypto_curve25519_shared_secret(&base_key, &one_time_key, pos);
 
+    olm_logf(OLM_LOG_TRACE, LOG_CATEGORY,
+             "Initial shared secret %s", bytes_to_string(secret, pos).c_str());
+
     ratchet.initialise_as_alice(secret, sizeof(secret), ratchet_key);
 
     olm::unset(base_key);
@@ -235,6 +238,9 @@ std::size_t olm::Session::new_inbound_session(
     _olm_crypto_curve25519_shared_secret(&bob_identity_key, &alice_base_key, pos);
     pos += CURVE25519_SHARED_SECRET_LENGTH;
     _olm_crypto_curve25519_shared_secret(&bob_one_time_key, &alice_base_key, pos);
+
+    olm_logf(OLM_LOG_DEBUG, LOG_CATEGORY,
+             "Initial shared secret %s", bytes_to_string(secret, pos).c_str());
 
     ratchet.initialise_as_bob(secret, sizeof(secret), ratchet_key);
 
