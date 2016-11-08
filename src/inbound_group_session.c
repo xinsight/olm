@@ -391,3 +391,9 @@ size_t olm_inbound_group_session_id(
         session->signing_key.public_key, GROUP_SESSION_ID_LENGTH, id
     );
 }
+
+uint32_t olm_inbound_group_session_first_known_index(
+    const OlmInboundGroupSession *session
+) {
+    return session->initial_ratchet.counter;
+}

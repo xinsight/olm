@@ -165,6 +165,13 @@ size_t olm_inbound_group_session_id(
     uint8_t * id, size_t id_length
 );
 
+/**
+ * Get the first message index we know how to decrypt.
+ */
+uint32_t olm_inbound_group_session_first_known_index(
+    const OlmInboundGroupSession *session
+);
+
 
 #ifdef __cplusplus
 } // extern "C"

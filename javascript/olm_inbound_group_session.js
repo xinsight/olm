@@ -105,4 +105,10 @@ InboundGroupSession.prototype['session_id'] = restore_stack(function() {
     return Pointer_stringify(session_id);
 });
 
+InboundGroupSession.prototype['first_known_index'] = restore_stack(function() {
+    return inbound_group_session_method(
+        Module['_olm_inbound_group_session_first_known_index']
+    )(this.ptr);
+});
+
 olm_exports['InboundGroupSession'] = InboundGroupSession;
