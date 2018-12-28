@@ -62,6 +62,7 @@ size_t olm_sas_set_their_key(
 
 size_t olm_sas_generate_bytes(
     OlmSAS * sas,
+    const void * info, size_t info_length,
     void * output, size_t output_length
 );
 
@@ -72,6 +73,7 @@ size_t olm_sas_mac_length(
 size_t olm_sas_calculate_mac(
     OlmSAS * sas,
     void * input, size_t input_length,
+    const void * info, size_t info_length,
     void * mac, size_t mac_length
 );
 

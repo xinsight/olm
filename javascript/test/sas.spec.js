@@ -42,12 +42,12 @@ describe("sas", function() {
     it('should create matching SAS bytes', function () {
         alice.set_their_key(bob.get_pubkey());
         bob.set_their_key(alice.get_pubkey());
-        expect(alice.generate_bytes(5).toString()).toEqual(bob.generate_bytes(5).toString());
+        expect(alice.generate_bytes("SAS", 5).toString()).toEqual(bob.generate_bytes("SAS", 5).toString());
     });
 
     it('should create matching MACs', function () {
         alice.set_their_key(bob.get_pubkey());
         bob.set_their_key(alice.get_pubkey());
-        expect(alice.calculate_mac("test").toString()).toEqual(bob.calculate_mac("test").toString());
+        expect(alice.calculate_mac("test", "MAC").toString()).toEqual(bob.calculate_mac("test", "MAC").toString());
     });
 });

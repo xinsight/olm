@@ -100,12 +100,13 @@ size_t olm_sas_set_their_key(
 
 size_t olm_sas_generate_bytes(
     OlmSAS * sas,
+    const void * info, size_t info_length,
     void * output, size_t output_length
 ) {
     _olm_crypto_hkdf_sha256(
         sas->secret, sizeof(sas->secret),
         NULL, 0,
-        (const uint8_t *) "SAS", 3,
+        (const uint8_t *) info, info_length,
         output, output_length
     );
     return 0;
@@ -120,6 +121,7 @@ size_t olm_sas_mac_length(
 size_t olm_sas_calculate_mac(
     OlmSAS * sas,
     void * input, size_t input_length,
+    const void * info, size_t info_length,
     void * mac, size_t mac_length
 ) {
     if (mac_length < olm_sas_mac_length(sas)) {
@@ -131,7 +133,7 @@ size_t olm_sas_calculate_mac(
     _olm_crypto_hkdf_sha256(
         sas->secret, sizeof(sas->secret),
         NULL, 0,
-        (const uint8_t *) "MAC", 3,
+        (const uint8_t *) info, info_length,
         key, 256
     );
     _olm_crypto_hmac_sha256(key, 256, input, input_length, mac);

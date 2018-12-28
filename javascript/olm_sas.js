@@ -42,10 +42,13 @@ SAS.prototype['set_their_key'] = restore_stack(function(their_key) {
     );
 });
 
-SAS.prototype['generate_bytes'] = restore_stack(function(length) {
+SAS.prototype['generate_bytes'] = restore_stack(function(info, length) {
+    var info_array = array_from_string(info);
+    var info_buffer = stack(info_array);
     var output_buffer = stack(length);
     sas_method(Module['_olm_sas_generate_bytes'])(
         this.ptr,
+        info_buffer, info_array.length,
         output_buffer, length
     );
     // The inner Uint8Array creates a view of the buffer.  The outer Uint8Array
@@ -57,14 +60,17 @@ SAS.prototype['generate_bytes'] = restore_stack(function(length) {
     return output_arr;
 });
 
-SAS.prototype['calculate_mac'] = restore_stack(function(input) {
+SAS.prototype['calculate_mac'] = restore_stack(function(input, info) {
     var input_array = array_from_string(input);
-    var input_buffer = stack(input_array)
+    var input_buffer = stack(input_array);
+    var info_array = array_from_string(info);
+    var info_buffer = stack(info_array);
     var mac_length = sas_method(Module['_olm_sas_mac_length'])(this.ptr);
     var mac_buffer = stack(mac_length + NULL_BYTE_PADDING_LENGTH);
     sas_method(Module['_olm_sas_calculate_mac'])(
         this.ptr,
         input_buffer, input_array.length,
+        info_buffer, info_array.length,
         mac_buffer, mac_length
     );
     return Pointer_stringify(mac_buffer);

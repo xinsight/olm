@@ -55,8 +55,8 @@ olm_sas_set_their_key(alice_sas, pubkey, olm_sas_pubkey_length(alice_sas));
 std::uint8_t alice_bytes[6];
 std::uint8_t bob_bytes[6];
 
-olm_sas_generate_bytes(alice_sas, alice_bytes, 6);
-olm_sas_generate_bytes(bob_sas, bob_bytes, 6);
+olm_sas_generate_bytes(alice_sas, "SAS", 3, alice_bytes, 6);
+olm_sas_generate_bytes(bob_sas, "SAS", 3, bob_bytes, 6);
 
 assert_equals(alice_bytes, bob_bytes, 6);
 
@@ -108,8 +108,8 @@ olm_sas_set_their_key(alice_sas, pubkey, olm_sas_pubkey_length(alice_sas));
 std::uint8_t alice_mac[olm_sas_mac_length(alice_sas)];
 std::uint8_t bob_mac[olm_sas_mac_length(bob_sas)];
 
-olm_sas_calculate_mac(alice_sas, (void *) "Hello world!", 12, alice_mac, olm_sas_mac_length(alice_sas));
-olm_sas_calculate_mac(bob_sas, (void *) "Hello world!", 12, bob_mac, olm_sas_mac_length(bob_sas));
+olm_sas_calculate_mac(alice_sas, (void *) "Hello world!", 12, "MAC", 3, alice_mac, olm_sas_mac_length(alice_sas));
+olm_sas_calculate_mac(bob_sas, (void *) "Hello world!", 12, "MAC", 3, bob_mac, olm_sas_mac_length(bob_sas));
 
 assert_equals(alice_mac, bob_mac, olm_sas_mac_length(alice_sas));
 
