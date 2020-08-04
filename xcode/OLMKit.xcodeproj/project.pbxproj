@@ -14,6 +14,57 @@
 		32A151311DABDD4300400192 /* OLMKitGroupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 32A151301DABDD4300400192 /* OLMKitGroupTests.m */; };
 		32F143AF2236B4100077CF37 /* OLMKitSASTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 32F143AE2236B4100077CF37 /* OLMKitSASTests.m */; };
 		7DBAD311AEA85CF6DB80DCFA /* libPods-OLMKitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7123FABE917D0FB140E036B7 /* libPods-OLMKitTests.a */; };
+		AEA3A78D24D9F09900F851FE /* OLMKit_Carthage.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A78B24D9F09900F851FE /* OLMKit_Carthage.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AEA3A79624D9F0C400F851FE /* OLMInboundGroupSession.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79124D9F0C400F851FE /* OLMInboundGroupSession.h */; };
+		AEA3A79724D9F0C400F851FE /* OLMInboundGroupSession.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A79224D9F0C400F851FE /* OLMInboundGroupSession.m */; };
+		AEA3A79824D9F0C400F851FE /* OLMAccount_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79324D9F0C400F851FE /* OLMAccount_Private.h */; };
+		AEA3A79924D9F0C400F851FE /* OLMAccount.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79424D9F0C400F851FE /* OLMAccount.h */; };
+		AEA3A79A24D9F0C400F851FE /* OLMAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A79524D9F0C400F851FE /* OLMAccount.m */; };
+		AEA3A7B024D9F0F200F851FE /* OLMSAS.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79B24D9F0EF00F851FE /* OLMSAS.h */; };
+		AEA3A7B124D9F0F200F851FE /* OLMOutboundGroupSession.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79C24D9F0EF00F851FE /* OLMOutboundGroupSession.h */; };
+		AEA3A7B224D9F0F200F851FE /* OLMSession_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79D24D9F0EF00F851FE /* OLMSession_Private.h */; };
+		AEA3A7B324D9F0F200F851FE /* OLMSAS.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A79E24D9F0EF00F851FE /* OLMSAS.m */; };
+		AEA3A7B424D9F0F200F851FE /* OLMSession.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A79F24D9F0EF00F851FE /* OLMSession.m */; };
+		AEA3A7B524D9F0F200F851FE /* OLMPkSigning.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A024D9F0F000F851FE /* OLMPkSigning.h */; };
+		AEA3A7B624D9F0F200F851FE /* OLMUtility.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A124D9F0F000F851FE /* OLMUtility.h */; };
+		AEA3A7B724D9F0F200F851FE /* OLMPkEncryption.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A224D9F0F000F851FE /* OLMPkEncryption.h */; };
+		AEA3A7B824D9F0F200F851FE /* OLMMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A324D9F0F000F851FE /* OLMMessage.h */; };
+		AEA3A7B924D9F0F200F851FE /* OLMSerializable.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A424D9F0F000F851FE /* OLMSerializable.h */; };
+		AEA3A7BA24D9F0F200F851FE /* OLMSession.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A524D9F0F000F851FE /* OLMSession.h */; };
+		AEA3A7BB24D9F0F200F851FE /* OLMMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7A624D9F0F100F851FE /* OLMMessage.m */; };
+		AEA3A7BC24D9F0F200F851FE /* OLMPkMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7A724D9F0F100F851FE /* OLMPkMessage.m */; };
+		AEA3A7BD24D9F0F200F851FE /* OLMPkMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A824D9F0F100F851FE /* OLMPkMessage.h */; };
+		AEA3A7BE24D9F0F200F851FE /* OLMPkSigning.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7A924D9F0F100F851FE /* OLMPkSigning.m */; };
+		AEA3A7BF24D9F0F200F851FE /* OLMUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7AA24D9F0F100F851FE /* OLMUtility.m */; };
+		AEA3A7C024D9F0F200F851FE /* OLMOutboundGroupSession.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7AB24D9F0F100F851FE /* OLMOutboundGroupSession.m */; };
+		AEA3A7C124D9F0F200F851FE /* OLMPkDecryption.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7AC24D9F0F200F851FE /* OLMPkDecryption.h */; };
+		AEA3A7C224D9F0F200F851FE /* OLMPkDecryption.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7AD24D9F0F200F851FE /* OLMPkDecryption.m */; };
+		AEA3A7C324D9F0F200F851FE /* OLMPkEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7AE24D9F0F200F851FE /* OLMPkEncryption.m */; };
+		AEA3A7C424D9F0F200F851FE /* OLMKit.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7AF24D9F0F200F851FE /* OLMKit.m */; };
+		AEA3A7C524D9F0F900F851FE /* OLMKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 3274F6121D9A698E005282E4 /* OLMKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AEA3A7C924D9F2F000F851FE /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AEA3A7C624D9F2DD00F851FE /* libc++.tbd */; };
+		AEA3A7CC24D9F6DA00F851FE /* sha256.c in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7CB24D9F6DA00F851FE /* sha256.c */; };
+		AEA3A7CE24D9F6FB00F851FE /* aes.c in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7CD24D9F6FB00F851FE /* aes.c */; };
+		AEA3A7D024D9F73200F851FE /* curve25519-donna.c in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7CF24D9F73200F851FE /* curve25519-donna.c */; };
+		AEA3A7E524D9F79C00F851FE /* message.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7D224D9F79B00F851FE /* message.cpp */; };
+		AEA3A7E624D9F79C00F851FE /* inbound_group_session.c in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7D324D9F79B00F851FE /* inbound_group_session.c */; };
+		AEA3A7E724D9F79C00F851FE /* cipher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7D424D9F79B00F851FE /* cipher.cpp */; };
+		AEA3A7E824D9F79C00F851FE /* outbound_group_session.c in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7D524D9F79B00F851FE /* outbound_group_session.c */; };
+		AEA3A7E924D9F79C00F851FE /* pickle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7D624D9F79B00F851FE /* pickle.cpp */; };
+		AEA3A7EA24D9F79C00F851FE /* pk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7D724D9F79B00F851FE /* pk.cpp */; };
+		AEA3A7EB24D9F79C00F851FE /* sas.c in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7D824D9F79B00F851FE /* sas.c */; };
+		AEA3A7EC24D9F79C00F851FE /* crypto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7D924D9F79B00F851FE /* crypto.cpp */; };
+		AEA3A7ED24D9F79C00F851FE /* utility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7DA24D9F79B00F851FE /* utility.cpp */; };
+		AEA3A7EE24D9F79C00F851FE /* error.c in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7DB24D9F79B00F851FE /* error.c */; };
+		AEA3A7EF24D9F79C00F851FE /* megolm.c in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7DC24D9F79B00F851FE /* megolm.c */; };
+		AEA3A7F024D9F79C00F851FE /* session.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7DD24D9F79B00F851FE /* session.cpp */; };
+		AEA3A7F124D9F79C00F851FE /* ed25519.c in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7DE24D9F79C00F851FE /* ed25519.c */; };
+		AEA3A7F224D9F79C00F851FE /* ratchet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7DF24D9F79C00F851FE /* ratchet.cpp */; };
+		AEA3A7F324D9F79C00F851FE /* memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7E024D9F79C00F851FE /* memory.cpp */; };
+		AEA3A7F424D9F79C00F851FE /* base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7E124D9F79C00F851FE /* base64.cpp */; };
+		AEA3A7F524D9F79C00F851FE /* olm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7E224D9F79C00F851FE /* olm.cpp */; };
+		AEA3A7F624D9F79C00F851FE /* account.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7E324D9F79C00F851FE /* account.cpp */; };
+		AEA3A7F724D9F79C00F851FE /* pickle_encoding.c in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7E424D9F79C00F851FE /* pickle_encoding.c */; };
 		D667051A0BA47E17CCC4E5D7 /* libPods-OLMKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F2F22FE8F173AF845B882805 /* libPods-OLMKit.a */; };
 /* End PBXBuildFile section */
 
@@ -40,6 +91,58 @@
 		32F143AE2236B4100077CF37 /* OLMKitSASTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OLMKitSASTests.m; sourceTree = "<group>"; };
 		7123FABE917D0FB140E036B7 /* libPods-OLMKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OLMKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		875BA7A520258EA15A31DD82 /* Pods-OLMKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OLMKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-OLMKitTests/Pods-OLMKitTests.debug.xcconfig"; sourceTree = "<group>"; };
+		AEA3A78924D9F09900F851FE /* OLMKit_Carthage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OLMKit_Carthage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AEA3A78B24D9F09900F851FE /* OLMKit_Carthage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OLMKit_Carthage.h; sourceTree = "<group>"; };
+		AEA3A78C24D9F09900F851FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AEA3A79124D9F0C400F851FE /* OLMInboundGroupSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMInboundGroupSession.h; path = OLMKit/OLMInboundGroupSession.h; sourceTree = SOURCE_ROOT; };
+		AEA3A79224D9F0C400F851FE /* OLMInboundGroupSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OLMInboundGroupSession.m; path = OLMKit/OLMInboundGroupSession.m; sourceTree = SOURCE_ROOT; };
+		AEA3A79324D9F0C400F851FE /* OLMAccount_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMAccount_Private.h; path = OLMKit/OLMAccount_Private.h; sourceTree = SOURCE_ROOT; };
+		AEA3A79424D9F0C400F851FE /* OLMAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OLMAccount.h; sourceTree = "<group>"; };
+		AEA3A79524D9F0C400F851FE /* OLMAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OLMAccount.m; path = OLMKit/OLMAccount.m; sourceTree = SOURCE_ROOT; };
+		AEA3A79B24D9F0EF00F851FE /* OLMSAS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMSAS.h; path = OLMKit/OLMSAS.h; sourceTree = SOURCE_ROOT; };
+		AEA3A79C24D9F0EF00F851FE /* OLMOutboundGroupSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMOutboundGroupSession.h; path = OLMKit/OLMOutboundGroupSession.h; sourceTree = SOURCE_ROOT; };
+		AEA3A79D24D9F0EF00F851FE /* OLMSession_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMSession_Private.h; path = OLMKit/OLMSession_Private.h; sourceTree = SOURCE_ROOT; };
+		AEA3A79E24D9F0EF00F851FE /* OLMSAS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OLMSAS.m; path = OLMKit/OLMSAS.m; sourceTree = SOURCE_ROOT; };
+		AEA3A79F24D9F0EF00F851FE /* OLMSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OLMSession.m; path = OLMKit/OLMSession.m; sourceTree = SOURCE_ROOT; };
+		AEA3A7A024D9F0F000F851FE /* OLMPkSigning.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMPkSigning.h; path = OLMKit/OLMPkSigning.h; sourceTree = SOURCE_ROOT; };
+		AEA3A7A124D9F0F000F851FE /* OLMUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMUtility.h; path = OLMKit/OLMUtility.h; sourceTree = SOURCE_ROOT; };
+		AEA3A7A224D9F0F000F851FE /* OLMPkEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMPkEncryption.h; path = OLMKit/OLMPkEncryption.h; sourceTree = SOURCE_ROOT; };
+		AEA3A7A324D9F0F000F851FE /* OLMMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMMessage.h; path = OLMKit/OLMMessage.h; sourceTree = SOURCE_ROOT; };
+		AEA3A7A424D9F0F000F851FE /* OLMSerializable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMSerializable.h; path = OLMKit/OLMSerializable.h; sourceTree = SOURCE_ROOT; };
+		AEA3A7A524D9F0F000F851FE /* OLMSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMSession.h; path = OLMKit/OLMSession.h; sourceTree = SOURCE_ROOT; };
+		AEA3A7A624D9F0F100F851FE /* OLMMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OLMMessage.m; path = OLMKit/OLMMessage.m; sourceTree = SOURCE_ROOT; };
+		AEA3A7A724D9F0F100F851FE /* OLMPkMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OLMPkMessage.m; path = OLMKit/OLMPkMessage.m; sourceTree = SOURCE_ROOT; };
+		AEA3A7A824D9F0F100F851FE /* OLMPkMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMPkMessage.h; path = OLMKit/OLMPkMessage.h; sourceTree = SOURCE_ROOT; };
+		AEA3A7A924D9F0F100F851FE /* OLMPkSigning.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OLMPkSigning.m; path = OLMKit/OLMPkSigning.m; sourceTree = SOURCE_ROOT; };
+		AEA3A7AA24D9F0F100F851FE /* OLMUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OLMUtility.m; path = OLMKit/OLMUtility.m; sourceTree = SOURCE_ROOT; };
+		AEA3A7AB24D9F0F100F851FE /* OLMOutboundGroupSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OLMOutboundGroupSession.m; path = OLMKit/OLMOutboundGroupSession.m; sourceTree = SOURCE_ROOT; };
+		AEA3A7AC24D9F0F200F851FE /* OLMPkDecryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMPkDecryption.h; path = OLMKit/OLMPkDecryption.h; sourceTree = SOURCE_ROOT; };
+		AEA3A7AD24D9F0F200F851FE /* OLMPkDecryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OLMPkDecryption.m; path = OLMKit/OLMPkDecryption.m; sourceTree = SOURCE_ROOT; };
+		AEA3A7AE24D9F0F200F851FE /* OLMPkEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OLMPkEncryption.m; path = OLMKit/OLMPkEncryption.m; sourceTree = SOURCE_ROOT; };
+		AEA3A7AF24D9F0F200F851FE /* OLMKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OLMKit.m; path = OLMKit/OLMKit.m; sourceTree = SOURCE_ROOT; };
+		AEA3A7C624D9F2DD00F851FE /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/lib/libc++.tbd"; sourceTree = DEVELOPER_DIR; };
+		AEA3A7CB24D9F6DA00F851FE /* sha256.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha256.c; path = "../lib/crypto-algorithms/sha256.c"; sourceTree = "<group>"; };
+		AEA3A7CD24D9F6FB00F851FE /* aes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = aes.c; path = "../lib/crypto-algorithms/aes.c"; sourceTree = "<group>"; };
+		AEA3A7CF24D9F73200F851FE /* curve25519-donna.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "curve25519-donna.c"; path = "../lib/curve25519-donna/curve25519-donna.c"; sourceTree = "<group>"; };
+		AEA3A7D224D9F79B00F851FE /* message.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = message.cpp; path = ../src/message.cpp; sourceTree = "<group>"; };
+		AEA3A7D324D9F79B00F851FE /* inbound_group_session.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = inbound_group_session.c; path = ../src/inbound_group_session.c; sourceTree = "<group>"; };
+		AEA3A7D424D9F79B00F851FE /* cipher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cipher.cpp; path = ../src/cipher.cpp; sourceTree = "<group>"; };
+		AEA3A7D524D9F79B00F851FE /* outbound_group_session.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = outbound_group_session.c; path = ../src/outbound_group_session.c; sourceTree = "<group>"; };
+		AEA3A7D624D9F79B00F851FE /* pickle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pickle.cpp; path = ../src/pickle.cpp; sourceTree = "<group>"; };
+		AEA3A7D724D9F79B00F851FE /* pk.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pk.cpp; path = ../src/pk.cpp; sourceTree = "<group>"; };
+		AEA3A7D824D9F79B00F851FE /* sas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sas.c; path = ../src/sas.c; sourceTree = "<group>"; };
+		AEA3A7D924D9F79B00F851FE /* crypto.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = crypto.cpp; path = ../src/crypto.cpp; sourceTree = "<group>"; };
+		AEA3A7DA24D9F79B00F851FE /* utility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utility.cpp; path = ../src/utility.cpp; sourceTree = "<group>"; };
+		AEA3A7DB24D9F79B00F851FE /* error.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = error.c; path = ../src/error.c; sourceTree = "<group>"; };
+		AEA3A7DC24D9F79B00F851FE /* megolm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = megolm.c; path = ../src/megolm.c; sourceTree = "<group>"; };
+		AEA3A7DD24D9F79B00F851FE /* session.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = session.cpp; path = ../src/session.cpp; sourceTree = "<group>"; };
+		AEA3A7DE24D9F79C00F851FE /* ed25519.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ed25519.c; path = ../src/ed25519.c; sourceTree = "<group>"; };
+		AEA3A7DF24D9F79C00F851FE /* ratchet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ratchet.cpp; path = ../src/ratchet.cpp; sourceTree = "<group>"; };
+		AEA3A7E024D9F79C00F851FE /* memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = memory.cpp; path = ../src/memory.cpp; sourceTree = "<group>"; };
+		AEA3A7E124D9F79C00F851FE /* base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = base64.cpp; path = ../src/base64.cpp; sourceTree = "<group>"; };
+		AEA3A7E224D9F79C00F851FE /* olm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = olm.cpp; path = ../src/olm.cpp; sourceTree = "<group>"; };
+		AEA3A7E324D9F79C00F851FE /* account.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = account.cpp; path = ../src/account.cpp; sourceTree = "<group>"; };
+		AEA3A7E424D9F79C00F851FE /* pickle_encoding.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pickle_encoding.c; path = ../src/pickle_encoding.c; sourceTree = "<group>"; };
 		D48E486DAE1F59F4F7EA8C25 /* Pods-OLMKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OLMKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-OLMKitTests/Pods-OLMKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		E50E6B16E3433A5EB3297DEE /* Pods-OLMKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OLMKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-OLMKit/Pods-OLMKit.debug.xcconfig"; sourceTree = "<group>"; };
 		F2F22FE8F173AF845B882805 /* libPods-OLMKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OLMKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -63,6 +166,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AEA3A78624D9F09900F851FE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AEA3A7C924D9F2F000F851FE /* libc++.tbd in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -80,8 +191,13 @@
 		3274F5EE1D9A633A005282E4 = {
 			isa = PBXGroup;
 			children = (
+				AEA3A7F824D9F7C100F851FE /* ed25519 */,
+				AEA3A7D124D9F76C00F851FE /* olm */,
+				AEA3A7CA24D9F69000F851FE /* algorithms */,
+				AEA3A78324D9F00A00F851FE /* OLMKit-Carthage */,
 				3274F5FA1D9A633A005282E4 /* OLMKit */,
 				3274F6051D9A633A005282E4 /* OLMKitTests */,
+				AEA3A78A24D9F09900F851FE /* OLMKit-Carthage */,
 				3274F5F91D9A633A005282E4 /* Products */,
 				1FA3F53DFAAAA773F07F5E56 /* Pods */,
 				A5D2E6F079A29F7CC2A8D9FE /* Frameworks */,
@@ -93,6 +209,7 @@
 			children = (
 				3274F5F81D9A633A005282E4 /* OLMKit.framework */,
 				3274F6011D9A633A005282E4 /* OLMKitTests.xctest */,
+				AEA3A78924D9F09900F851FE /* OLMKit_Carthage.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -100,6 +217,8 @@
 		3274F5FA1D9A633A005282E4 /* OLMKit */ = {
 			isa = PBXGroup;
 			children = (
+				AEA3A79424D9F0C400F851FE /* OLMAccount.h */,
+				AEA3A79524D9F0C400F851FE /* OLMAccount.m */,
 				3274F6121D9A698E005282E4 /* OLMKit.h */,
 				3274F5FC1D9A633A005282E4 /* Info.plist */,
 			);
@@ -121,10 +240,94 @@
 		A5D2E6F079A29F7CC2A8D9FE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AEA3A7C624D9F2DD00F851FE /* libc++.tbd */,
 				F2F22FE8F173AF845B882805 /* libPods-OLMKit.a */,
 				7123FABE917D0FB140E036B7 /* libPods-OLMKitTests.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AEA3A78324D9F00A00F851FE /* OLMKit-Carthage */ = {
+			isa = PBXGroup;
+			children = (
+				AEA3A79324D9F0C400F851FE /* OLMAccount_Private.h */,
+				AEA3A79124D9F0C400F851FE /* OLMInboundGroupSession.h */,
+				AEA3A79224D9F0C400F851FE /* OLMInboundGroupSession.m */,
+				AEA3A7AF24D9F0F200F851FE /* OLMKit.m */,
+				AEA3A7A324D9F0F000F851FE /* OLMMessage.h */,
+				AEA3A7A624D9F0F100F851FE /* OLMMessage.m */,
+				AEA3A79C24D9F0EF00F851FE /* OLMOutboundGroupSession.h */,
+				AEA3A7AB24D9F0F100F851FE /* OLMOutboundGroupSession.m */,
+				AEA3A7AC24D9F0F200F851FE /* OLMPkDecryption.h */,
+				AEA3A7AD24D9F0F200F851FE /* OLMPkDecryption.m */,
+				AEA3A7A224D9F0F000F851FE /* OLMPkEncryption.h */,
+				AEA3A7AE24D9F0F200F851FE /* OLMPkEncryption.m */,
+				AEA3A7A824D9F0F100F851FE /* OLMPkMessage.h */,
+				AEA3A7A724D9F0F100F851FE /* OLMPkMessage.m */,
+				AEA3A7A024D9F0F000F851FE /* OLMPkSigning.h */,
+				AEA3A7A924D9F0F100F851FE /* OLMPkSigning.m */,
+				AEA3A79B24D9F0EF00F851FE /* OLMSAS.h */,
+				AEA3A79E24D9F0EF00F851FE /* OLMSAS.m */,
+				AEA3A7A424D9F0F000F851FE /* OLMSerializable.h */,
+				AEA3A79D24D9F0EF00F851FE /* OLMSession_Private.h */,
+				AEA3A7A524D9F0F000F851FE /* OLMSession.h */,
+				AEA3A79F24D9F0EF00F851FE /* OLMSession.m */,
+				AEA3A7A124D9F0F000F851FE /* OLMUtility.h */,
+				AEA3A7AA24D9F0F100F851FE /* OLMUtility.m */,
+			);
+			path = "OLMKit-Carthage";
+			sourceTree = "<group>";
+		};
+		AEA3A78A24D9F09900F851FE /* OLMKit-Carthage */ = {
+			isa = PBXGroup;
+			children = (
+				AEA3A78B24D9F09900F851FE /* OLMKit_Carthage.h */,
+				AEA3A78C24D9F09900F851FE /* Info.plist */,
+			);
+			path = "OLMKit-Carthage";
+			sourceTree = "<group>";
+		};
+		AEA3A7CA24D9F69000F851FE /* algorithms */ = {
+			isa = PBXGroup;
+			children = (
+				AEA3A7CB24D9F6DA00F851FE /* sha256.c */,
+				AEA3A7CF24D9F73200F851FE /* curve25519-donna.c */,
+				AEA3A7CD24D9F6FB00F851FE /* aes.c */,
+			);
+			name = algorithms;
+			sourceTree = "<group>";
+		};
+		AEA3A7D124D9F76C00F851FE /* olm */ = {
+			isa = PBXGroup;
+			children = (
+				AEA3A7E324D9F79C00F851FE /* account.cpp */,
+				AEA3A7E124D9F79C00F851FE /* base64.cpp */,
+				AEA3A7D424D9F79B00F851FE /* cipher.cpp */,
+				AEA3A7D924D9F79B00F851FE /* crypto.cpp */,
+				AEA3A7DE24D9F79C00F851FE /* ed25519.c */,
+				AEA3A7DB24D9F79B00F851FE /* error.c */,
+				AEA3A7D324D9F79B00F851FE /* inbound_group_session.c */,
+				AEA3A7DC24D9F79B00F851FE /* megolm.c */,
+				AEA3A7E024D9F79C00F851FE /* memory.cpp */,
+				AEA3A7D224D9F79B00F851FE /* message.cpp */,
+				AEA3A7E224D9F79C00F851FE /* olm.cpp */,
+				AEA3A7D524D9F79B00F851FE /* outbound_group_session.c */,
+				AEA3A7E424D9F79C00F851FE /* pickle_encoding.c */,
+				AEA3A7D624D9F79B00F851FE /* pickle.cpp */,
+				AEA3A7D724D9F79B00F851FE /* pk.cpp */,
+				AEA3A7DF24D9F79C00F851FE /* ratchet.cpp */,
+				AEA3A7D824D9F79B00F851FE /* sas.c */,
+				AEA3A7DD24D9F79B00F851FE /* session.cpp */,
+				AEA3A7DA24D9F79B00F851FE /* utility.cpp */,
+			);
+			name = olm;
+			sourceTree = "<group>";
+		};
+		AEA3A7F824D9F7C100F851FE /* ed25519 */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = ed25519;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,6 +338,29 @@
 			buildActionMask = 2147483647;
 			files = (
 				3274F6131D9A698E005282E4 /* OLMKit.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AEA3A78424D9F09900F851FE /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AEA3A7BD24D9F0F200F851FE /* OLMPkMessage.h in Headers */,
+				AEA3A7B124D9F0F200F851FE /* OLMOutboundGroupSession.h in Headers */,
+				AEA3A7C124D9F0F200F851FE /* OLMPkDecryption.h in Headers */,
+				AEA3A7B624D9F0F200F851FE /* OLMUtility.h in Headers */,
+				AEA3A7B224D9F0F200F851FE /* OLMSession_Private.h in Headers */,
+				AEA3A7B024D9F0F200F851FE /* OLMSAS.h in Headers */,
+				AEA3A7B824D9F0F200F851FE /* OLMMessage.h in Headers */,
+				AEA3A79824D9F0C400F851FE /* OLMAccount_Private.h in Headers */,
+				AEA3A7B924D9F0F200F851FE /* OLMSerializable.h in Headers */,
+				AEA3A7BA24D9F0F200F851FE /* OLMSession.h in Headers */,
+				AEA3A79624D9F0C400F851FE /* OLMInboundGroupSession.h in Headers */,
+				AEA3A78D24D9F09900F851FE /* OLMKit_Carthage.h in Headers */,
+				AEA3A7B524D9F0F200F851FE /* OLMPkSigning.h in Headers */,
+				AEA3A79924D9F0C400F851FE /* OLMAccount.h in Headers */,
+				AEA3A7C524D9F0F900F851FE /* OLMKit.h in Headers */,
+				AEA3A7B724D9F0F200F851FE /* OLMPkEncryption.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,6 +405,24 @@
 			productReference = 3274F6011D9A633A005282E4 /* OLMKitTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		AEA3A78824D9F09900F851FE /* OLMKit-Carthage */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AEA3A78E24D9F09900F851FE /* Build configuration list for PBXNativeTarget "OLMKit-Carthage" */;
+			buildPhases = (
+				AEA3A78424D9F09900F851FE /* Headers */,
+				AEA3A78524D9F09900F851FE /* Sources */,
+				AEA3A78624D9F09900F851FE /* Frameworks */,
+				AEA3A78724D9F09900F851FE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "OLMKit-Carthage";
+			productName = "OLMKit-Carthage";
+			productReference = AEA3A78924D9F09900F851FE /* OLMKit_Carthage.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -196,6 +440,10 @@
 						CreatedOnToolsVersion = 8.0;
 						ProvisioningStyle = Automatic;
 					};
+					AEA3A78824D9F09900F851FE = {
+						CreatedOnToolsVersion = 11.0;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = 3274F5F21D9A633A005282E4 /* Build configuration list for PBXProject "OLMKit" */;
@@ -203,6 +451,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 3274F5EE1D9A633A005282E4;
@@ -212,6 +461,7 @@
 			targets = (
 				3274F5F71D9A633A005282E4 /* OLMKit */,
 				3274F6001D9A633A005282E4 /* OLMKitTests */,
+				AEA3A78824D9F09900F851FE /* OLMKit-Carthage */,
 			);
 		};
 /* End PBXProject section */
@@ -225,6 +475,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		3274F5FF1D9A633A005282E4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AEA3A78724D9F09900F851FE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -288,6 +545,47 @@
 				32F143AF2236B4100077CF37 /* OLMKitSASTests.m in Sources */,
 				3244277D2175EF700023EDF1 /* OLMKitPkTests.m in Sources */,
 				32A151311DABDD4300400192 /* OLMKitGroupTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AEA3A78524D9F09900F851FE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AEA3A7F524D9F79C00F851FE /* olm.cpp in Sources */,
+				AEA3A7ED24D9F79C00F851FE /* utility.cpp in Sources */,
+				AEA3A7BB24D9F0F200F851FE /* OLMMessage.m in Sources */,
+				AEA3A7EF24D9F79C00F851FE /* megolm.c in Sources */,
+				AEA3A7E524D9F79C00F851FE /* message.cpp in Sources */,
+				AEA3A7C324D9F0F200F851FE /* OLMPkEncryption.m in Sources */,
+				AEA3A7EA24D9F79C00F851FE /* pk.cpp in Sources */,
+				AEA3A7F424D9F79C00F851FE /* base64.cpp in Sources */,
+				AEA3A79A24D9F0C400F851FE /* OLMAccount.m in Sources */,
+				AEA3A7EC24D9F79C00F851FE /* crypto.cpp in Sources */,
+				AEA3A7F724D9F79C00F851FE /* pickle_encoding.c in Sources */,
+				AEA3A7CC24D9F6DA00F851FE /* sha256.c in Sources */,
+				AEA3A7C424D9F0F200F851FE /* OLMKit.m in Sources */,
+				AEA3A7EE24D9F79C00F851FE /* error.c in Sources */,
+				AEA3A7C224D9F0F200F851FE /* OLMPkDecryption.m in Sources */,
+				AEA3A79724D9F0C400F851FE /* OLMInboundGroupSession.m in Sources */,
+				AEA3A7BF24D9F0F200F851FE /* OLMUtility.m in Sources */,
+				AEA3A7BE24D9F0F200F851FE /* OLMPkSigning.m in Sources */,
+				AEA3A7EB24D9F79C00F851FE /* sas.c in Sources */,
+				AEA3A7F224D9F79C00F851FE /* ratchet.cpp in Sources */,
+				AEA3A7E724D9F79C00F851FE /* cipher.cpp in Sources */,
+				AEA3A7CE24D9F6FB00F851FE /* aes.c in Sources */,
+				AEA3A7B324D9F0F200F851FE /* OLMSAS.m in Sources */,
+				AEA3A7F624D9F79C00F851FE /* account.cpp in Sources */,
+				AEA3A7F324D9F79C00F851FE /* memory.cpp in Sources */,
+				AEA3A7C024D9F0F200F851FE /* OLMOutboundGroupSession.m in Sources */,
+				AEA3A7F024D9F79C00F851FE /* session.cpp in Sources */,
+				AEA3A7F124D9F79C00F851FE /* ed25519.c in Sources */,
+				AEA3A7B424D9F0F200F851FE /* OLMSession.m in Sources */,
+				AEA3A7E924D9F79C00F851FE /* pickle.cpp in Sources */,
+				AEA3A7E824D9F79C00F851FE /* outbound_group_session.c in Sources */,
+				AEA3A7E624D9F79C00F851FE /* inbound_group_session.c in Sources */,
+				AEA3A7BC24D9F0F200F851FE /* OLMPkMessage.m in Sources */,
+				AEA3A7D024D9F73200F851FE /* curve25519-donna.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -474,6 +772,79 @@
 			};
 			name = Release;
 		};
+		AEA3A78F24D9F09900F851FE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)",
+					"$(SRCROOT)/../include",
+					"$(SRCROOT)/../lib",
+				);
+				INFOPLIST_FILE = "OLMKit-Carthage/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				OTHER_CFLAGS = (
+					"-DOLMLIB_VERSION_PATCH=0",
+					"-DOLMLIB_VERSION_MINOR=1",
+					"-DOLMLIB_VERSION_MAJOR=3",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "ca.uhn.OLMKit-Carthage";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "";
+			};
+			name = Debug;
+		};
+		AEA3A79024D9F09900F851FE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)",
+					"$(SRCROOT)/../include",
+					"$(SRCROOT)/../lib",
+				);
+				INFOPLIST_FILE = "OLMKit-Carthage/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_FAST_MATH = YES;
+				OTHER_CFLAGS = (
+					"-DOLMLIB_VERSION_PATCH=0",
+					"-DOLMLIB_VERSION_MINOR=1",
+					"-DOLMLIB_VERSION_MAJOR=3",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "ca.uhn.OLMKit-Carthage";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -500,6 +871,15 @@
 			buildConfigurations = (
 				3274F6101D9A633B005282E4 /* Debug */,
 				3274F6111D9A633B005282E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AEA3A78E24D9F09900F851FE /* Build configuration list for PBXNativeTarget "OLMKit-Carthage" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AEA3A78F24D9F09900F851FE /* Debug */,
+				AEA3A79024D9F09900F851FE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
