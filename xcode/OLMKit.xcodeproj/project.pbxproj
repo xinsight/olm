@@ -14,29 +14,29 @@
 		32A151311DABDD4300400192 /* OLMKitGroupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 32A151301DABDD4300400192 /* OLMKitGroupTests.m */; };
 		32F143AF2236B4100077CF37 /* OLMKitSASTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 32F143AE2236B4100077CF37 /* OLMKitSASTests.m */; };
 		7DBAD311AEA85CF6DB80DCFA /* libPods-OLMKitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7123FABE917D0FB140E036B7 /* libPods-OLMKitTests.a */; };
-		AEA3A79624D9F0C400F851FE /* OLMInboundGroupSession.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79124D9F0C400F851FE /* OLMInboundGroupSession.h */; };
+		AEA3A79624D9F0C400F851FE /* OLMInboundGroupSession.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79124D9F0C400F851FE /* OLMInboundGroupSession.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AEA3A79724D9F0C400F851FE /* OLMInboundGroupSession.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A79224D9F0C400F851FE /* OLMInboundGroupSession.m */; };
 		AEA3A79824D9F0C400F851FE /* OLMAccount_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79324D9F0C400F851FE /* OLMAccount_Private.h */; };
-		AEA3A79924D9F0C400F851FE /* OLMAccount.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79424D9F0C400F851FE /* OLMAccount.h */; };
+		AEA3A79924D9F0C400F851FE /* OLMAccount.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79424D9F0C400F851FE /* OLMAccount.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AEA3A79A24D9F0C400F851FE /* OLMAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A79524D9F0C400F851FE /* OLMAccount.m */; };
-		AEA3A7B024D9F0F200F851FE /* OLMSAS.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79B24D9F0EF00F851FE /* OLMSAS.h */; };
-		AEA3A7B124D9F0F200F851FE /* OLMOutboundGroupSession.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79C24D9F0EF00F851FE /* OLMOutboundGroupSession.h */; };
+		AEA3A7B024D9F0F200F851FE /* OLMSAS.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79B24D9F0EF00F851FE /* OLMSAS.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AEA3A7B124D9F0F200F851FE /* OLMOutboundGroupSession.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79C24D9F0EF00F851FE /* OLMOutboundGroupSession.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AEA3A7B224D9F0F200F851FE /* OLMSession_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79D24D9F0EF00F851FE /* OLMSession_Private.h */; };
 		AEA3A7B324D9F0F200F851FE /* OLMSAS.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A79E24D9F0EF00F851FE /* OLMSAS.m */; };
 		AEA3A7B424D9F0F200F851FE /* OLMSession.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A79F24D9F0EF00F851FE /* OLMSession.m */; };
-		AEA3A7B524D9F0F200F851FE /* OLMPkSigning.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A024D9F0F000F851FE /* OLMPkSigning.h */; };
-		AEA3A7B624D9F0F200F851FE /* OLMUtility.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A124D9F0F000F851FE /* OLMUtility.h */; };
-		AEA3A7B724D9F0F200F851FE /* OLMPkEncryption.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A224D9F0F000F851FE /* OLMPkEncryption.h */; };
-		AEA3A7B824D9F0F200F851FE /* OLMMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A324D9F0F000F851FE /* OLMMessage.h */; };
-		AEA3A7B924D9F0F200F851FE /* OLMSerializable.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A424D9F0F000F851FE /* OLMSerializable.h */; };
-		AEA3A7BA24D9F0F200F851FE /* OLMSession.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A524D9F0F000F851FE /* OLMSession.h */; };
+		AEA3A7B524D9F0F200F851FE /* OLMPkSigning.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A024D9F0F000F851FE /* OLMPkSigning.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AEA3A7B624D9F0F200F851FE /* OLMUtility.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A124D9F0F000F851FE /* OLMUtility.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AEA3A7B724D9F0F200F851FE /* OLMPkEncryption.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A224D9F0F000F851FE /* OLMPkEncryption.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AEA3A7B824D9F0F200F851FE /* OLMMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A324D9F0F000F851FE /* OLMMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AEA3A7B924D9F0F200F851FE /* OLMSerializable.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A424D9F0F000F851FE /* OLMSerializable.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AEA3A7BA24D9F0F200F851FE /* OLMSession.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A524D9F0F000F851FE /* OLMSession.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AEA3A7BB24D9F0F200F851FE /* OLMMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7A624D9F0F100F851FE /* OLMMessage.m */; };
 		AEA3A7BC24D9F0F200F851FE /* OLMPkMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7A724D9F0F100F851FE /* OLMPkMessage.m */; };
-		AEA3A7BD24D9F0F200F851FE /* OLMPkMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A824D9F0F100F851FE /* OLMPkMessage.h */; };
+		AEA3A7BD24D9F0F200F851FE /* OLMPkMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7A824D9F0F100F851FE /* OLMPkMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AEA3A7BE24D9F0F200F851FE /* OLMPkSigning.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7A924D9F0F100F851FE /* OLMPkSigning.m */; };
 		AEA3A7BF24D9F0F200F851FE /* OLMUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7AA24D9F0F100F851FE /* OLMUtility.m */; };
 		AEA3A7C024D9F0F200F851FE /* OLMOutboundGroupSession.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7AB24D9F0F100F851FE /* OLMOutboundGroupSession.m */; };
-		AEA3A7C124D9F0F200F851FE /* OLMPkDecryption.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7AC24D9F0F200F851FE /* OLMPkDecryption.h */; };
+		AEA3A7C124D9F0F200F851FE /* OLMPkDecryption.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A7AC24D9F0F200F851FE /* OLMPkDecryption.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AEA3A7C224D9F0F200F851FE /* OLMPkDecryption.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7AD24D9F0F200F851FE /* OLMPkDecryption.m */; };
 		AEA3A7C324D9F0F200F851FE /* OLMPkEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7AE24D9F0F200F851FE /* OLMPkEncryption.m */; };
 		AEA3A7C424D9F0F200F851FE /* OLMKit.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A7AF24D9F0F200F851FE /* OLMKit.m */; };
@@ -788,6 +788,7 @@
 					"-DOLMLIB_VERSION_MAJOR=3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.uhn.OLMKit-Carthage";
+				PRODUCT_MODULE_NAME = OLMKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -824,6 +825,7 @@
 					"-DOLMLIB_VERSION_MAJOR=3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.uhn.OLMKit-Carthage";
+				PRODUCT_MODULE_NAME = OLMKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
