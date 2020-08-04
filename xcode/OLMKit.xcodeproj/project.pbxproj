@@ -14,7 +14,6 @@
 		32A151311DABDD4300400192 /* OLMKitGroupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 32A151301DABDD4300400192 /* OLMKitGroupTests.m */; };
 		32F143AF2236B4100077CF37 /* OLMKitSASTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 32F143AE2236B4100077CF37 /* OLMKitSASTests.m */; };
 		7DBAD311AEA85CF6DB80DCFA /* libPods-OLMKitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7123FABE917D0FB140E036B7 /* libPods-OLMKitTests.a */; };
-		AEA3A78D24D9F09900F851FE /* OLMKit_Carthage.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A78B24D9F09900F851FE /* OLMKit_Carthage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AEA3A79624D9F0C400F851FE /* OLMInboundGroupSession.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79124D9F0C400F851FE /* OLMInboundGroupSession.h */; };
 		AEA3A79724D9F0C400F851FE /* OLMInboundGroupSession.m in Sources */ = {isa = PBXBuildFile; fileRef = AEA3A79224D9F0C400F851FE /* OLMInboundGroupSession.m */; };
 		AEA3A79824D9F0C400F851FE /* OLMAccount_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA3A79324D9F0C400F851FE /* OLMAccount_Private.h */; };
@@ -92,8 +91,6 @@
 		7123FABE917D0FB140E036B7 /* libPods-OLMKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OLMKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		875BA7A520258EA15A31DD82 /* Pods-OLMKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OLMKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-OLMKitTests/Pods-OLMKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		AEA3A78924D9F09900F851FE /* OLMKit_Carthage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OLMKit_Carthage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		AEA3A78B24D9F09900F851FE /* OLMKit_Carthage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OLMKit_Carthage.h; sourceTree = "<group>"; };
-		AEA3A78C24D9F09900F851FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AEA3A79124D9F0C400F851FE /* OLMInboundGroupSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMInboundGroupSession.h; path = OLMKit/OLMInboundGroupSession.h; sourceTree = SOURCE_ROOT; };
 		AEA3A79224D9F0C400F851FE /* OLMInboundGroupSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OLMInboundGroupSession.m; path = OLMKit/OLMInboundGroupSession.m; sourceTree = SOURCE_ROOT; };
 		AEA3A79324D9F0C400F851FE /* OLMAccount_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMAccount_Private.h; path = OLMKit/OLMAccount_Private.h; sourceTree = SOURCE_ROOT; };
@@ -197,7 +194,6 @@
 				AEA3A78324D9F00A00F851FE /* OLMKit-Carthage */,
 				3274F5FA1D9A633A005282E4 /* OLMKit */,
 				3274F6051D9A633A005282E4 /* OLMKitTests */,
-				AEA3A78A24D9F09900F851FE /* OLMKit-Carthage */,
 				3274F5F91D9A633A005282E4 /* Products */,
 				1FA3F53DFAAAA773F07F5E56 /* Pods */,
 				A5D2E6F079A29F7CC2A8D9FE /* Frameworks */,
@@ -278,15 +274,6 @@
 			path = "OLMKit-Carthage";
 			sourceTree = "<group>";
 		};
-		AEA3A78A24D9F09900F851FE /* OLMKit-Carthage */ = {
-			isa = PBXGroup;
-			children = (
-				AEA3A78B24D9F09900F851FE /* OLMKit_Carthage.h */,
-				AEA3A78C24D9F09900F851FE /* Info.plist */,
-			);
-			path = "OLMKit-Carthage";
-			sourceTree = "<group>";
-		};
 		AEA3A7CA24D9F69000F851FE /* algorithms */ = {
 			isa = PBXGroup;
 			children = (
@@ -356,7 +343,6 @@
 				AEA3A7B924D9F0F200F851FE /* OLMSerializable.h in Headers */,
 				AEA3A7BA24D9F0F200F851FE /* OLMSession.h in Headers */,
 				AEA3A79624D9F0C400F851FE /* OLMInboundGroupSession.h in Headers */,
-				AEA3A78D24D9F09900F851FE /* OLMKit_Carthage.h in Headers */,
 				AEA3A7B524D9F0F200F851FE /* OLMPkSigning.h in Headers */,
 				AEA3A79924D9F0C400F851FE /* OLMAccount.h in Headers */,
 				AEA3A7C524D9F0F900F851FE /* OLMKit.h in Headers */,
@@ -790,7 +776,7 @@
 					"$(SRCROOT)/../include",
 					"$(SRCROOT)/../lib",
 				);
-				INFOPLIST_FILE = "OLMKit-Carthage/Info.plist";
+				INFOPLIST_FILE = OLMKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -827,7 +813,7 @@
 					"$(SRCROOT)/../include",
 					"$(SRCROOT)/../lib",
 				);
-				INFOPLIST_FILE = "OLMKit-Carthage/Info.plist";
+				INFOPLIST_FILE = OLMKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
