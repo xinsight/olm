@@ -90,7 +90,7 @@
 		32F143AE2236B4100077CF37 /* OLMKitSASTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OLMKitSASTests.m; sourceTree = "<group>"; };
 		7123FABE917D0FB140E036B7 /* libPods-OLMKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OLMKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		875BA7A520258EA15A31DD82 /* Pods-OLMKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OLMKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-OLMKitTests/Pods-OLMKitTests.debug.xcconfig"; sourceTree = "<group>"; };
-		AEA3A78924D9F09900F851FE /* OLMKit_Carthage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OLMKit_Carthage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AEA3A78924D9F09900F851FE /* OLMKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OLMKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEA3A79124D9F0C400F851FE /* OLMInboundGroupSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMInboundGroupSession.h; path = OLMKit/OLMInboundGroupSession.h; sourceTree = SOURCE_ROOT; };
 		AEA3A79224D9F0C400F851FE /* OLMInboundGroupSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OLMInboundGroupSession.m; path = OLMKit/OLMInboundGroupSession.m; sourceTree = SOURCE_ROOT; };
 		AEA3A79324D9F0C400F851FE /* OLMAccount_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OLMAccount_Private.h; path = OLMKit/OLMAccount_Private.h; sourceTree = SOURCE_ROOT; };
@@ -205,7 +205,7 @@
 			children = (
 				3274F5F81D9A633A005282E4 /* OLMKit.framework */,
 				3274F6011D9A633A005282E4 /* OLMKitTests.xctest */,
-				AEA3A78924D9F09900F851FE /* OLMKit_Carthage.framework */,
+				AEA3A78924D9F09900F851FE /* OLMKit.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -406,7 +406,7 @@
 			);
 			name = "OLMKit-Carthage";
 			productName = "OLMKit-Carthage";
-			productReference = AEA3A78924D9F09900F851FE /* OLMKit_Carthage.framework */;
+			productReference = AEA3A78924D9F09900F851FE /* OLMKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -789,7 +789,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.uhn.OLMKit-Carthage";
 				PRODUCT_MODULE_NAME = OLMKit;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = OLMKit;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
@@ -826,7 +826,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.uhn.OLMKit-Carthage";
 				PRODUCT_MODULE_NAME = OLMKit;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = OLMKit;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
